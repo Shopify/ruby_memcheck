@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module RubyMemcheck
@@ -24,7 +26,7 @@ module RubyMemcheck
     end
 
     def test_reports_memory_leak
-      assert_raises RubyMemcheck::TestTask::VALGRIND_REPORT_MSG do
+      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
         run_with_memcheck(<<~RUBY)
           RubyMemcheck::CTest.new.memory_leak
         RUBY
@@ -39,7 +41,7 @@ module RubyMemcheck
     end
 
     def test_reports_use_after_free
-      assert_raises RubyMemcheck::TestTask::VALGRIND_REPORT_MSG do
+      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
         run_with_memcheck(<<~RUBY)
           RubyMemcheck::CTest.new.use_after_free
         RUBY
@@ -65,7 +67,7 @@ module RubyMemcheck
     end
 
     def test_reports_multiple_errors
-      assert_raises RubyMemcheck::TestTask::VALGRIND_REPORT_MSG do
+      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
         run_with_memcheck(<<~RUBY)
           RubyMemcheck::CTest.new.memory_leak
           RubyMemcheck::CTest.new.use_after_free

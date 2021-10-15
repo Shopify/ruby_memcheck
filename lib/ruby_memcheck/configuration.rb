@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RubyMemcheck
   class Configuration
     DEFAULT_VALGRIND = "valgrind"
@@ -20,7 +22,7 @@ module RubyMemcheck
     ].freeze
 
     attr_reader :binary_name, :ruby, :valgrind_options, :valgrind,
-                :skipped_ruby_functions, :valgrind_xml_file, :output_io
+      :skipped_ruby_functions, :valgrind_xml_file, :output_io
 
     def initialize(
       binary_name:,
@@ -48,7 +50,7 @@ module RubyMemcheck
     end
 
     def command(*args)
-      "#{valgrind} #{valgrind_options.join(" ")} #{ruby} #{args.join(' ')}"
+      "#{valgrind} #{valgrind_options.join(" ")} #{ruby} #{args.join(" ")}"
     end
 
     def skip_stack?(stack)
@@ -58,7 +60,7 @@ module RubyMemcheck
         fn = frame.fn
 
         if frame_in_ruby?(frame) # in ruby
-          if !in_binary
+          unless in_binary
             # Skip this stack because it was called from Ruby
             return true if skipped_ruby_functions.any? { |r| r.match?(fn) }
           end

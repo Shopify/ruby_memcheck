@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RubyMemcheck
   class Stack
     attr_reader :frames

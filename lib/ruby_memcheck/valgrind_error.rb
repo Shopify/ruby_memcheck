@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module RubyMemcheck
   class ValgrindError
@@ -27,10 +28,10 @@ module RubyMemcheck
       str = StringIO.new
       str << "#{msg}\n"
       stack.frames.each do |frame|
-        if frame.in_binary?
-          str << " *#{frame.to_s}\n"
+        str << if frame.in_binary?
+          " *#{frame}\n"
         else
-          str << "  #{frame.to_s}\n"
+          "  #{frame}\n"
         end
       end
       str.string

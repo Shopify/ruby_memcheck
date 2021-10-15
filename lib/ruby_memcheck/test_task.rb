@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RubyMemcheck
   class TestTask < Rake::TestTask
     VALGRIND_REPORT_MSG = "Valgrind reported errors (e.g. memory leak or use-after-free)"
@@ -6,7 +8,7 @@ module RubyMemcheck
 
     def initialize(*args)
       @configuration =
-        if args.length > 0 && args[0].is_a?(Configuration)
+        if !args.empty? && args[0].is_a?(Configuration)
           args.shift
         else
           RubyMemcheck.default_configuration

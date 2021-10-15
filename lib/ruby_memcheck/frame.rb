@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RubyMemcheck
   class Frame
     attr_reader :fn, :obj, :file, :line, :in_binary

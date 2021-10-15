@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "tempfile"
 require "nokogiri"
 require "rake/testtask"
@@ -18,7 +20,7 @@ module RubyMemcheck
     def default_configuration
       unless @default_configuration
         raise "RubyMemcheck is not configured with a default configuration. "\
-              "Please run RubyMemcheck.config before using it."
+          "Please run RubyMemcheck.config before using it."
       end
       @default_configuration
     end

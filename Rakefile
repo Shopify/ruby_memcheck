@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "bundler/gem_tasks"
 require "rake/testtask"
 require "rake/extensiontask"
@@ -15,4 +17,4 @@ namespace :test do
   end
 end
 
-task :default => :test
+task default: :test
