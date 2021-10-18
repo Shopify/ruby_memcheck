@@ -13,6 +13,7 @@ module RubyMemcheck
     DEFAULT_SKIPPED_RUBY_FUNCTIONS = [
       /\Arb_check_funcall/,
       /\Arb_enc_raise\z/,
+      /\Arb_exc_raise\z/,
       /\Arb_funcall/,
       /\Arb_ivar_set\z/,
       /\Arb_raise\z/,
