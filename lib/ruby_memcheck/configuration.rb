@@ -76,7 +76,9 @@ module RubyMemcheck
     end
 
     def frame_in_ruby?(frame)
-      frame.obj == ruby
+      frame.obj == ruby ||
+        # Hack to fix Ruby built with --enabled-shared
+        File.basename(frame.obj) == "libruby.so.#{RUBY_VERSION}"
     end
 
     def frame_in_binary?(frame)

@@ -38,8 +38,8 @@ module RubyMemcheck
       @errors = []
 
       xml = Nokogiri::XML(configuration.valgrind_xml_file.read)
-      xml.xpath("/valgrindoutput/error").each do |error|
-        error = ValgrindError.new(configuration, error)
+      xml.xpath("/valgrindoutput/error").each do |error_xml|
+        error = ValgrindError.new(configuration, error_xml)
         next if error.skip?
         @errors << error
       end
