@@ -83,13 +83,13 @@ The easiest way to use this gem is to use it on your test suite using rake.
       RubyMemcheck::TestTask.new(valgrind: :compile, &test_config)
     end
     ```
-1. In your `test_helper.rb`/`spec_helper.rb` (or whatever file sets up your test suite), add this line:
+1. At the top of your `test_helper.rb`/`spec_helper.rb` (or whatever file sets up your test suite), add this line:
 
     ```ruby
-    END { GC.start }
+    at_exit { GC.start }
     ```
 
-    This will ensure that the Garbage Collector is ran before Ruby shuts down. This will reduce the number of false-positives.
+    Place this line as close to the top of the file as possible, before any requires in the file (especially before the call to `require "minitest/autorun"`). This will ensure that the Garbage Collector is ran before Ruby shuts down. This will reduce the number of false-positives.
 1. You're ready to run your test suite with Valgrind using `rake test:valgrind`! Note that this will take a while to run because Valgrind will make Ruby significantly slower.
 
 ## License
