@@ -66,6 +66,33 @@ module RubyMemcheck
       assert_empty(@output_io.string)
     end
 
+    def test_call_into_ruby_mem_leak_does_not_report
+      ok, _ = run_with_memcheck(<<~RUBY)
+        RubyMemcheck::CTest.new.call_into_ruby_mem_leak
+      RUBY
+
+      assert(ok)
+      assert_empty(@test_task.errors)
+      assert_empty(@output_io.string)
+    end
+
+    def test_call_into_ruby_mem_leak_reports_when_not_skipped
+      @configuration = Configuration.new(
+        binary_name: @configuration.binary_name,
+        output_io: @configuration.output_io,
+        skipped_ruby_functions: []
+      )
+      @test_task = RubyMemcheck::TestTask.new(@configuration)
+
+      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+        run_with_memcheck(<<~RUBY)
+          RubyMemcheck::CTest.new.call_into_ruby_mem_leak
+        RUBY
+      end
+
+      assert_operator(@test_task.errors.length, :>=, 1)
+    end
+
     def test_reports_multiple_errors
       assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
         run_with_memcheck(<<~RUBY)

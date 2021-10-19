@@ -30,6 +30,16 @@ static VALUE uninitialized_value(VALUE _)
 #pragma GCC diagnostic pop
 }
 
+static VALUE call_into_ruby_mem_leak(VALUE obj)
+{
+    char str[20];
+    for (int i = 0; i < 10000; i++) {
+        sprintf(str, "foobar%d", i);
+        rb_intern(str);
+    }
+    return Qnil;
+}
+
 void Init_ruby_memcheck_c_test(void)
 {
     VALUE mRubyMemcheck = rb_define_module("RubyMemcheck");
@@ -40,4 +50,5 @@ void Init_ruby_memcheck_c_test(void)
     rb_define_method(cRubyMemcheckCTest, "memory_leak", memory_leak, 0);
     rb_define_method(cRubyMemcheckCTest, "use_after_free", use_after_free, 0);
     rb_define_method(cRubyMemcheckCTest, "uninitialized_value", uninitialized_value, 0);
+    rb_define_method(cRubyMemcheckCTest, "call_into_ruby_mem_leak", call_into_ruby_mem_leak, 0);
 }
