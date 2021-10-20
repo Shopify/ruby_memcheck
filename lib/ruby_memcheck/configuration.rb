@@ -56,25 +56,21 @@ module RubyMemcheck
     end
 
     def skip_stack?(stack)
-      in_binary = false
-
       stack.frames.each do |frame|
         fn = frame.fn
 
         if frame_in_ruby?(frame) # in ruby
-          unless in_binary
-            # Skip this stack because it was called from Ruby
-            return true if skipped_ruby_functions.any? { |r| r.match?(fn) }
-          end
+          # Skip this stack because it was called from Ruby
+          return true if skipped_ruby_functions.any? { |r| r.match?(fn) }
         elsif frame_in_binary?(frame) # in binary
-          in_binary = true
-
           # Skip the Init function
           return true if fn == "Init_#{binary_name}"
+
+          return false
         end
       end
 
-      !in_binary
+      return true
     end
 
     def frame_in_ruby?(frame)
