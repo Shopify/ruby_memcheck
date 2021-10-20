@@ -91,6 +91,7 @@ The easiest way to use this gem is to use it on your test suite using rake.
 
     Place this line as close to the top of the file as possible, before any requires in the file (especially before the call to `require "minitest/autorun"`). This will ensure that the Garbage Collector is ran before Ruby shuts down. This will reduce the number of false-positives.
 1. You're ready to run your test suite with Valgrind using `rake test:valgrind`! Note that this will take a while to run because Valgrind will make Ruby significantly slower.
+1. (Optional) If you find false-positives in the output, you can create suppression files in a `suppressions` directory in the root directory of your gem. In this directory, you can create [Valgrind suppression files](https://wiki.wxwidgets.org/Valgrind_Suppression_File_Howto). The most basic suppression file is `your_binary_name_ruby.supp`. If you want some suppressions for only specific versions of Ruby, you can add the Ruby version to the filename. For example, `your_binary_name_ruby-3.supp` will suppress for any Rubies with a major version of 3 (e.g. 3.0.0, 3.1.1, etc.), while suppression file `your_binary_name_ruby-3.1.supp` will only be used for Ruby with a major and minor version of 3.1 (e.g. 3.1.0, 3.1.1, etc.).
 
 ## License
 

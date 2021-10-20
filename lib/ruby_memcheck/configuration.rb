@@ -10,6 +10,7 @@ module RubyMemcheck
       "--leak-check=full",
       "--show-leak-kinds=definite",
     ].freeze
+    DEFAULT_VALGRIND_SUPPRESSIONS_DIR = "suppressions"
     DEFAULT_SKIPPED_RUBY_FUNCTIONS = [
       /\Arb_check_funcall/,
       /\Arb_enc_raise\z/,
@@ -31,6 +32,7 @@ module RubyMemcheck
       ruby: FileUtils::RUBY,
       valgrind: DEFAULT_VALGRIND,
       valgrind_options: DEFAULT_VALGRIND_OPTIONS,
+      valgrind_suppressions_dir: DEFAULT_VALGRIND_SUPPRESSIONS_DIR,
       skipped_ruby_functions: DEFAULT_SKIPPED_RUBY_FUNCTIONS,
       valgrind_xml_file: Tempfile.new,
       output_io: $stderr
@@ -38,7 +40,9 @@ module RubyMemcheck
       @binary_name = binary_name
       @ruby = ruby
       @valgrind = valgrind
-      @valgrind_options = valgrind_options
+      @valgrind_options =
+        valgrind_options +
+        get_valgrind_suppression_files(valgrind_suppressions_dir).map { |f| "--suppressions=#{f}" }
       @skipped_ruby_functions = skipped_ruby_functions
       @output_io = output_io
 
@@ -89,6 +93,19 @@ module RubyMemcheck
       else
         false
       end
+    end
+
+    private
+
+    def get_valgrind_suppression_files(dir)
+      full_ruby_version = "#{RUBY_ENGINE}-#{RUBY_VERSION}.#{RUBY_PATCHLEVEL}"
+      versions = [full_ruby_version]
+      (0..3).reverse_each { |i| versions << full_ruby_version.split(".")[0, i].join(".") }
+      versions << RUBY_ENGINE
+
+      versions.map do |version|
+        Dir[File.join(dir, "#{binary_name}_#{version}.supp")]
+      end.flatten
     end
   end
 end

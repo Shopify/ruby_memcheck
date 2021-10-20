@@ -1,0 +1,7 @@
+{
+   suppress memory_leak
+   Memcheck:Leak
+   ...
+   fun:memory_leak
+   ...
+}

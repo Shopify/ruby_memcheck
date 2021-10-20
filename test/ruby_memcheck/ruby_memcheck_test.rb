@@ -8,11 +8,7 @@ module RubyMemcheck
       Rake::FileUtilsExt.verbose_flag = false
 
       @output_io = StringIO.new
-      @configuration = Configuration.new(
-        binary_name: "ruby_memcheck_c_test",
-        output_io: @output_io
-      )
-      @test_task = RubyMemcheck::TestTask.new(@configuration)
+      build_configuration
     end
 
     def test_succeeds_when_there_is_no_memory_leak
@@ -77,12 +73,7 @@ module RubyMemcheck
     end
 
     def test_call_into_ruby_mem_leak_reports_when_not_skipped
-      @configuration = Configuration.new(
-        binary_name: @configuration.binary_name,
-        output_io: @configuration.output_io,
-        skipped_ruby_functions: []
-      )
-      @test_task = RubyMemcheck::TestTask.new(@configuration)
+      build_configuration(skipped_ruby_functions: [])
 
       assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
         run_with_memcheck(<<~RUBY)
@@ -91,6 +82,19 @@ module RubyMemcheck
       end
 
       assert_operator(@test_task.errors.length, :>=, 1)
+    end
+
+    def test_suppressions
+      # build_configuration(valgrind_suppressions_dir: "test/suppressions")
+      build_configuration(valgrind_suppressions_dir: File.join(__dir__, "suppressions"))
+
+      ok, _ = run_with_memcheck(<<~RUBY)
+        RubyMemcheck::CTest.new.memory_leak
+      RUBY
+
+      assert(ok)
+      assert_empty(@test_task.errors)
+      assert_empty(@output_io.string)
     end
 
     def test_reports_multiple_errors
@@ -144,6 +148,19 @@ module RubyMemcheck
       end
 
       [ok, status]
+    end
+
+    def build_configuration(
+      binary_name: "ruby_memcheck_c_test",
+      output_io: @output_io,
+      **options
+    )
+      @configuration = Configuration.new(
+        binary_name: "ruby_memcheck_c_test",
+        output_io: @output_io,
+        **options
+      )
+      @test_task = RubyMemcheck::TestTask.new(@configuration)
     end
   end
 end
