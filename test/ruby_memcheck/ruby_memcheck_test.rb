@@ -116,7 +116,7 @@ module RubyMemcheck
     end
 
     def test_ruby_failure
-      ok, _ = run_with_memcheck(<<~RUBY, raise_on_failure: false)
+      ok, _ = run_with_memcheck(<<~RUBY, raise_on_failure: false, spawn_opts: { out: "/dev/null", err: "/dev/null" })
         foobar
       RUBY
 
@@ -127,7 +127,7 @@ module RubyMemcheck
 
     private
 
-    def run_with_memcheck(code, raise_on_failure: true)
+    def run_with_memcheck(code, raise_on_failure: true, spawn_opts: {})
       script = Tempfile.new
       script.write("require 'ruby_memcheck_c_test'\n#{code}")
       script.flush
@@ -137,7 +137,8 @@ module RubyMemcheck
 
       @test_task.ruby(
         "-I#{File.join(__dir__, "ext")}",
-        script.path
+        script.path,
+        **spawn_opts
       ) do |ok_val, status_val|
         ok = ok_val
         status = status_val
