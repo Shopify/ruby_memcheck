@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "tempfile"
-require "nokogiri"
 require "rake/testtask"
 
 require "ruby_memcheck/configuration"
