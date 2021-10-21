@@ -20,7 +20,7 @@ module RubyMemcheck
     def ruby(*args, **options, &block)
       command = configuration.command(args)
       sh(command, **options) do |ok, res|
-        if ok && configuration.valgrind_xml_file
+        if configuration.valgrind_xml_file
           parse_valgrind_output
           unless errors.empty?
             output_valgrind_errors
