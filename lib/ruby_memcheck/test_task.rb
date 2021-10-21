@@ -35,6 +35,8 @@ module RubyMemcheck
     private
 
     def parse_valgrind_output
+      require "nokogiri"
+
       @errors = []
 
       xml = Nokogiri::XML(configuration.valgrind_xml_file.read)
