@@ -7,10 +7,16 @@ static VALUE no_memory_leak(VALUE _)
     return Qnil;
 }
 
-static VALUE memory_leak(VALUE _)
+/* This function must not be inlined to ensure that it has a stack frame. */
+static void __attribute__((noinline)) allocate_memory_leak()
 {
     volatile char *ptr = malloc(100);
     ptr[0] = 'a';
+} 
+
+static VALUE memory_leak(VALUE _)
+{
+    allocate_memory_leak();
     return Qnil;
 }
 
@@ -42,6 +48,9 @@ static VALUE call_into_ruby_mem_leak(VALUE obj)
 
 void Init_ruby_memcheck_c_test(void)
 {
+    /* Memory leaks in the Init functions should be ignored. */
+    allocate_memory_leak();
+
     VALUE mRubyMemcheck = rb_define_module("RubyMemcheck");
     cRubyMemcheckCTest = rb_define_class_under(mRubyMemcheck, "CTest", rb_cObject);
     rb_global_variable(&cRubyMemcheckCTest);
