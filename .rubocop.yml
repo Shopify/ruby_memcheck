@@ -3,3 +3,7 @@ inherit_gem:
 
 AllCops:
   SuggestExtensions: false
+
+Style/GlobalVars:
+  Exclude:
+    - test/ruby_memcheck/ext/extconf.rb
