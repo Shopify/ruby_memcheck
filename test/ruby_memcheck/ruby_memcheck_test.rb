@@ -115,14 +115,30 @@ module RubyMemcheck
       assert_match(/^ \*use_after_free \(ruby_memcheck_c_test\.c:\d+\)$/, output)
     end
 
-    def test_ruby_failure
+    def test_ruby_failure_without_errors
       ok, _ = run_with_memcheck(<<~RUBY, raise_on_failure: false, spawn_opts: { out: "/dev/null", err: "/dev/null" })
         foobar
       RUBY
 
       refute(ok)
-      assert_nil(@test_task.errors)
+      assert_empty(@test_task.errors)
       assert_empty(@output_io.string)
+    end
+
+    def test_ruby_failure_with_errors
+      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+        run_with_memcheck(<<~RUBY, raise_on_failure: false, spawn_opts: { out: "/dev/null", err: "/dev/null" })
+          RubyMemcheck::CTest.new.memory_leak
+          raise
+        RUBY
+      end
+
+      assert_equal(1, @test_task.errors.length)
+
+      output = @output_io.string
+      refute_empty(output)
+      assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
+      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test\.c:\d+\)$/, output)
     end
 
     private
