@@ -8,6 +8,7 @@ require "ruby_memcheck/frame"
 require "ruby_memcheck/stack"
 require "ruby_memcheck/test_task"
 require "ruby_memcheck/valgrind_error"
+require "ruby_memcheck/suppression"
 require "ruby_memcheck/version"
 
 module RubyMemcheck

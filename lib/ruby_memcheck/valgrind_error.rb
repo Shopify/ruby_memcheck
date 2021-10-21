@@ -2,7 +2,7 @@
 
 module RubyMemcheck
   class ValgrindError
-    attr_reader :kind, :msg, :stack
+    attr_reader :kind, :msg, :stack, :suppression
 
     def initialize(configuration, error)
       @kind = error.at_xpath("kind").content
@@ -14,6 +14,7 @@ module RubyMemcheck
         end
       @stack = Stack.new(configuration, error.at_xpath("stack"))
       @configuration = configuration
+      @suppression = Suppression.new(configuration, error.at_xpath("suppression"))
     end
 
     def skip?
@@ -34,6 +35,7 @@ module RubyMemcheck
           "  #{frame}\n"
         end
       end
+      str << suppression.to_s
       str.string
     end
 
