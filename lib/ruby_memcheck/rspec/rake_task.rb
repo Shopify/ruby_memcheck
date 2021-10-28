@@ -32,9 +32,7 @@ module RubyMemcheck
 
         report_valgrind_errors
 
-        if error
-          raise error
-        end
+        raise error if error
       end
 
       private
