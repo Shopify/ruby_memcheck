@@ -25,7 +25,7 @@ module RubyMemcheck
     ].freeze
 
     attr_reader :binary_name, :ruby, :valgrind_options, :valgrind,
-      :skipped_ruby_functions, :valgrind_xml_file, :output_io
+      :skipped_ruby_functions, :valgrind_xml_dir, :output_io
 
     def initialize(
       binary_name:,
@@ -34,7 +34,7 @@ module RubyMemcheck
       valgrind_options: DEFAULT_VALGRIND_OPTIONS,
       valgrind_suppressions_dir: DEFAULT_VALGRIND_SUPPRESSIONS_DIR,
       skipped_ruby_functions: DEFAULT_SKIPPED_RUBY_FUNCTIONS,
-      valgrind_xml_file: Tempfile.new,
+      valgrind_xml_dir: Dir.mktmpdir,
       output_io: $stderr
     )
       @binary_name = binary_name
@@ -46,11 +46,16 @@ module RubyMemcheck
       @skipped_ruby_functions = skipped_ruby_functions
       @output_io = output_io
 
-      if valgrind_xml_file
-        @valgrind_xml_file = valgrind_xml_file
+      if valgrind_xml_dir
+        valgrind_xml_dir = File.expand_path(valgrind_xml_dir)
+        FileUtils.mkdir_p(valgrind_xml_dir)
+        @valgrind_xml_dir = valgrind_xml_dir
         @valgrind_options += [
           "--xml=yes",
-          "--xml-file=#{valgrind_xml_file.path}",
+          # %p will be replaced with the PID
+          # This prevents forking and shelling out from generating a corrupted XML
+          # See --log-file from https://valgrind.org/docs/manual/manual-core.html
+          "--xml-file=#{File.join(valgrind_xml_dir, "%p.out")}",
         ]
       end
     end

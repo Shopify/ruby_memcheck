@@ -2,9 +2,9 @@
 
 module RubyMemcheck
   class TestTask < Rake::TestTask
-    VALGRIND_REPORT_MSG = "Valgrind reported errors (e.g. memory leak or use-after-free)"
+    include TestTaskReporter
 
-    attr_reader :configuration, :errors
+    attr_reader :configuration
 
     def initialize(*args)
       @configuration =
@@ -20,38 +20,9 @@ module RubyMemcheck
     def ruby(*args, **options, &block)
       command = configuration.command(args)
       sh(command, **options) do |ok, res|
-        if configuration.valgrind_xml_file
-          parse_valgrind_output
-          unless errors.empty?
-            output_valgrind_errors
-            raise VALGRIND_REPORT_MSG
-          end
-        end
+        report_valgrind_errors
 
         yield ok, res if block_given?
-      end
-    end
-
-    private
-
-    def parse_valgrind_output
-      require "nokogiri"
-
-      @errors = []
-
-      Nokogiri::XML::Reader(File.open(configuration.valgrind_xml_file.to_path)).each do |node|
-        next unless node.name == "error" && node.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT
-        error_xml = Nokogiri::XML::Document.parse(node.outer_xml).root
-        error = ValgrindError.new(configuration, error_xml)
-        next if error.skip?
-        @errors << error
-      end
-    end
-
-    def output_valgrind_errors
-      @errors.each do |error|
-        configuration.output_io.puts error
-        configuration.output_io.puts
       end
     end
   end
