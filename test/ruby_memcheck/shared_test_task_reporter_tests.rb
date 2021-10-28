@@ -5,7 +5,7 @@ require "test_helper"
 module RubyMemcheck
   module SharedTestTaskReporterTests
     def test_succeeds_when_there_is_no_memory_leak
-      ok, _ = run_with_memcheck(<<~RUBY)
+      ok = run_with_memcheck(<<~RUBY)
         RubyMemcheck::CTest.new.no_memory_leak
       RUBY
 
@@ -56,7 +56,7 @@ module RubyMemcheck
     end
 
     def test_call_into_ruby_mem_leak_does_not_report
-      ok, _ = run_with_memcheck(<<~RUBY)
+      ok = run_with_memcheck(<<~RUBY)
         RubyMemcheck::CTest.new.call_into_ruby_mem_leak
       RUBY
 
@@ -80,7 +80,7 @@ module RubyMemcheck
     def test_suppressions
       build_configuration(valgrind_suppressions_dir: File.join(__dir__, "suppressions"))
 
-      ok, _ = run_with_memcheck(<<~RUBY)
+      ok = run_with_memcheck(<<~RUBY)
         RubyMemcheck::CTest.new.memory_leak
       RUBY
 
@@ -149,7 +149,7 @@ module RubyMemcheck
     end
 
     def test_ruby_failure_without_errors
-      ok, _ = run_with_memcheck(<<~RUBY, raise_on_failure: false, spawn_opts: { out: "/dev/null", err: "/dev/null" })
+      ok = run_with_memcheck(<<~RUBY, raise_on_failure: false, spawn_opts: { out: "/dev/null", err: "/dev/null" })
         foobar
       RUBY
 
@@ -176,6 +176,10 @@ module RubyMemcheck
 
     private
 
+    def run_with_memcheck(code, raise_on_failure: true, spawn_opts: {})
+      raise NotImplementedError
+    end
+
     def build_configuration(
       binary_name: "ruby_memcheck_c_test",
       output_io: @output_io,
@@ -186,7 +190,11 @@ module RubyMemcheck
         output_io: @output_io,
         **options
       )
-      @test_task = RubyMemcheck::TestTask.new(@configuration)
+      build_test_task
+    end
+
+    def build_test_task
+      raise NotImplementedError
     end
   end
 end

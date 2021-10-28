@@ -27,8 +27,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency("nokogiri")
 
   spec.add_development_dependency("minitest", "~> 5.0")
+  spec.add_development_dependency("minitest-parallel_fork", "~> 1.2")
   spec.add_development_dependency("rake", "~> 13.0")
   spec.add_development_dependency("rake-compiler", "~> 1.1")
+  spec.add_development_dependency("rspec-core")
   spec.add_development_dependency("rubocop", "~> 1.22")
   spec.add_development_dependency("rubocop-shopify", "~> 2.3")
 end

@@ -3,7 +3,7 @@
 require "ruby_memcheck/shared_test_task_reporter_tests"
 
 module RubyMemcheck
-  class RubyMemcheckTest < Minitest::Test
+  class TestTaskTest < Minitest::Test
     include SharedTestTaskReporterTests
 
     def setup
@@ -17,26 +17,31 @@ module RubyMemcheck
 
     def run_with_memcheck(code, raise_on_failure: true, spawn_opts: {})
       script = Tempfile.new
-      script.write("require 'ruby_memcheck_c_test'\n#{code}")
+      script.write(<<~RUBY)
+        require "ruby_memcheck_c_test"
+        #{code}
+      RUBY
       script.flush
 
       ok = nil
-      status = nil
 
       @test_task.ruby(
         "-I#{File.join(__dir__, "ext")}",
         script.path,
         **spawn_opts
-      ) do |ok_val, status_val|
+      ) do |ok_val, status|
         ok = ok_val
-        status = status_val
 
         if raise_on_failure && !ok
           raise "Command failed with status (#{status.exitstatus})"
         end
       end
 
-      [ok, status]
+      ok
+    end
+
+    def build_test_task
+      @test_task = RubyMemcheck::TestTask.new(@configuration)
     end
   end
 end
