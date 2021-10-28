@@ -85,7 +85,6 @@ module RubyMemcheck
     end
 
     def test_suppressions
-      # build_configuration(valgrind_suppressions_dir: "test/suppressions")
       build_configuration(valgrind_suppressions_dir: File.join(__dir__, "suppressions"))
 
       ok, _ = run_with_memcheck(<<~RUBY)
@@ -117,6 +116,25 @@ module RubyMemcheck
       assert_match(/^  insert_a_suppression_name_here/, output)
       assert_match(/^  Memcheck:Leak/, output)
       assert_match(/^  fun:allocate_memory_leak/, output)
+    end
+
+    def test_follows_forked_children
+      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+        run_with_memcheck(<<~RUBY)
+          pid = Process.fork do
+            RubyMemcheck::CTest.new.memory_leak
+          end
+
+          Process.wait(pid)
+        RUBY
+      end
+
+      assert_equal(1, @test_task.errors.length)
+
+      output = @output_io.string
+      refute_empty(output)
+      assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
+      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test\.c:\d+\)$/, output)
     end
 
     def test_reports_multiple_errors

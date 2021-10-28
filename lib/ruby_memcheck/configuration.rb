@@ -6,6 +6,7 @@ module RubyMemcheck
     DEFAULT_VALGRIND_OPTIONS = [
       "--num-callers=50",
       "--error-limit=no",
+      "--trace-children=yes",
       "--undef-value-errors=no",
       "--leak-check=full",
       "--show-leak-kinds=definite",
