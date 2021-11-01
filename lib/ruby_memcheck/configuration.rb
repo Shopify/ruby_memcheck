@@ -44,7 +44,7 @@ module RubyMemcheck
       @ruby = ruby
       @valgrind = valgrind
       @valgrind_options = valgrind_options
-      @valgrind_suppressions_dir = valgrind_suppressions_dir
+      @valgrind_suppressions_dir = File.expand_path(valgrind_suppressions_dir)
       @valgrind_generate_suppressions = valgrind_generate_suppressions
       @skipped_ruby_functions = skipped_ruby_functions
       @output_io = output_io
