@@ -9,8 +9,6 @@ module RubyMemcheck
     end
 
     def to_s
-      return "" if root.nil?
-
       str = StringIO.new
       str << "{\n"
       str << "  #{root.at_xpath("sname").content}\n"

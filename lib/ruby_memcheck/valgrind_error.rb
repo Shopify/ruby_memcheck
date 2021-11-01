@@ -2,6 +2,9 @@
 
 module RubyMemcheck
   class ValgrindError
+    SUPPRESSION_NOT_CONFIGURED_ERROR_MSG =
+      "Please enable suppressions by configuring with valgrind_generate_suppressions set to true"
+
     attr_reader :kind, :msg, :stack, :suppression
 
     def initialize(configuration, error)
@@ -14,7 +17,13 @@ module RubyMemcheck
         end
       @stack = Stack.new(configuration, error.at_xpath("stack"))
       @configuration = configuration
-      @suppression = Suppression.new(configuration, error.at_xpath("suppression"))
+
+      suppression_node = error.at_xpath("suppression")
+      if configuration.valgrind_generate_suppressions?
+        @suppression = Suppression.new(configuration, suppression_node)
+      elsif suppression_node
+        raise SUPPRESSION_NOT_CONFIGURED_ERROR_MSG
+      end
     end
 
     def skip?
@@ -35,7 +44,7 @@ module RubyMemcheck
           "  #{frame}\n"
         end
       end
-      str << suppression.to_s
+      str << suppression.to_s if suppression
       str.string
     end
 

@@ -9,10 +9,6 @@ module RubyMemcheck
       @configuration = Configuration.new(binary_name: "ruby_memcheck_c_test")
     end
 
-    def test_given_nil
-      assert_equal("", RubyMemcheck::Suppression.new(@configuration, nil).to_s)
-    end
-
     def test_given_a_suppression_node
       suppression = ::Nokogiri::XML(<<~EOF).at_xpath("//suppression")
         <foo>

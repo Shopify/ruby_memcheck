@@ -25,8 +25,9 @@ module RubyMemcheck
       /\Arb_yield/,
     ].freeze
 
-    attr_reader :binary_name, :ruby, :valgrind_options, :valgrind,
-      :skipped_ruby_functions, :valgrind_xml_dir, :output_io
+    attr_reader :binary_name, :ruby, :valgrind, :valgrind_options, :valgrind_suppressions_dir,
+      :valgrind_generate_suppressions, :skipped_ruby_functions, :valgrind_xml_dir, :output_io
+    alias_method :valgrind_generate_suppressions?, :valgrind_generate_suppressions
 
     def initialize(
       binary_name:,
@@ -34,6 +35,7 @@ module RubyMemcheck
       valgrind: DEFAULT_VALGRIND,
       valgrind_options: DEFAULT_VALGRIND_OPTIONS,
       valgrind_suppressions_dir: DEFAULT_VALGRIND_SUPPRESSIONS_DIR,
+      valgrind_generate_suppressions: false,
       skipped_ruby_functions: DEFAULT_SKIPPED_RUBY_FUNCTIONS,
       valgrind_xml_dir: Dir.mktmpdir,
       output_io: $stderr
@@ -41,9 +43,9 @@ module RubyMemcheck
       @binary_name = binary_name
       @ruby = ruby
       @valgrind = valgrind
-      @valgrind_options =
-        valgrind_options +
-        get_valgrind_suppression_files(valgrind_suppressions_dir).map { |f| "--suppressions=#{f}" }
+      @valgrind_options = valgrind_options
+      @valgrind_suppressions_dir = valgrind_suppressions_dir
+      @valgrind_generate_suppressions = valgrind_generate_suppressions
       @skipped_ruby_functions = skipped_ruby_functions
       @output_io = output_io
 
@@ -62,7 +64,14 @@ module RubyMemcheck
     end
 
     def command(*args)
-      "#{valgrind} #{valgrind_options.join(" ")} #{ruby} #{args.join(" ")}"
+      [
+        valgrind,
+        valgrind_options,
+        get_valgrind_suppression_files(valgrind_suppressions_dir).map { |f| "--suppressions=#{f}" },
+        valgrind_generate_suppressions ? "--gen-suppressions=all" : "",
+        ruby,
+        args,
+      ].flatten.join(" ")
     end
 
     def skip_stack?(stack)
