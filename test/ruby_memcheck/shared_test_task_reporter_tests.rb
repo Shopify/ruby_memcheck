@@ -15,11 +15,12 @@ module RubyMemcheck
     end
 
     def test_reports_memory_leak
-      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+      error = assert_raises do
         run_with_memcheck(<<~RUBY)
           RubyMemcheck::CTest.new.memory_leak
         RUBY
       end
+      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
 
       assert_equal(1, @test_task.errors.length)
 
@@ -30,11 +31,12 @@ module RubyMemcheck
     end
 
     def test_reports_use_after_free
-      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+      error = assert_raises do
         run_with_memcheck(<<~RUBY)
           RubyMemcheck::CTest.new.use_after_free
         RUBY
       end
+      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
 
       assert_equal(1, @test_task.errors.length)
 
@@ -68,11 +70,12 @@ module RubyMemcheck
     def test_call_into_ruby_mem_leak_reports_when_not_skipped
       build_configuration(skipped_ruby_functions: [])
 
-      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+      error = assert_raises do
         run_with_memcheck(<<~RUBY)
           RubyMemcheck::CTest.new.call_into_ruby_mem_leak
         RUBY
       end
+      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
 
       assert_operator(@test_task.errors.length, :>=, 1)
     end
@@ -90,15 +93,14 @@ module RubyMemcheck
     end
 
     def test_generation_of_suppressions
-      valgrind_options = RubyMemcheck::Configuration::DEFAULT_VALGRIND_OPTIONS.dup
-      valgrind_options << "--gen-suppressions=all"
-      build_configuration(valgrind_options: valgrind_options)
+      build_configuration(valgrind_generate_suppressions: true)
 
-      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+      error = assert_raises do
         run_with_memcheck(<<~RUBY)
           RubyMemcheck::CTest.new.memory_leak
         RUBY
       end
+      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
 
       assert_equal(1, @test_task.errors.length)
 
@@ -112,7 +114,7 @@ module RubyMemcheck
     end
 
     def test_follows_forked_children
-      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+      error = assert_raises do
         run_with_memcheck(<<~RUBY)
           pid = Process.fork do
             RubyMemcheck::CTest.new.memory_leak
@@ -121,6 +123,7 @@ module RubyMemcheck
           Process.wait(pid)
         RUBY
       end
+      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
 
       assert_equal(1, @test_task.errors.length)
 
@@ -131,12 +134,13 @@ module RubyMemcheck
     end
 
     def test_reports_multiple_errors
-      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+      error = assert_raises do
         run_with_memcheck(<<~RUBY)
           RubyMemcheck::CTest.new.memory_leak
           RubyMemcheck::CTest.new.use_after_free
         RUBY
       end
+      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
 
       assert_equal(2, @test_task.errors.length)
 
@@ -159,12 +163,13 @@ module RubyMemcheck
     end
 
     def test_ruby_failure_with_errors
-      assert_raises(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG) do
+      error = assert_raises do
         run_with_memcheck(<<~RUBY, raise_on_failure: false, spawn_opts: { out: "/dev/null", err: "/dev/null" })
           RubyMemcheck::CTest.new.memory_leak
           raise
         RUBY
       end
+      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
 
       assert_equal(1, @test_task.errors.length)
 
