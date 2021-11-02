@@ -9,7 +9,7 @@ This gem provides a sane way to use Valgrind's memcheck on your native extension
     1. [How does it work?](#how-does-it-work)
     1. [Limitations](#limitations)
 1. [Installation](#installation)
-1. [Usage](#usage)
+1. [Setup](#setup)
 
 ## What is this gem?
 
@@ -38,15 +38,13 @@ Because of the aggressive heuristics used to filter out false-positives, there a
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem "ruby_memcheck"
+```
+gem install ruby_memcheck
 ```
 
-## Usage
+## Setup
 
-The easiest way to use this gem is to use it on your test suite using rake.
+The easiest way to use this gem is to use it on your test suite (minitest or RSpec) using rake.
 
 0. Install Valgrind.
 1. In your Rakefile, require this gem.
@@ -54,43 +52,69 @@ The easiest way to use this gem is to use it on your test suite using rake.
     ```ruby
     require "ruby_memcheck"
     ```
+
+    - **For RSpec:** If you're using RSpec, also add the following require.
+
+      ```ruby
+      require "ruby_memcheck/rspec/rake_task"
+      ```
+
 1. Configure the gem by calling `RubyMemcheck.config`. You must pass it your binary name. This is the same value you passed into `create_makefile` in your `extconf.rb` file. Make sure this value is correct or it will filter out almost everything as a false-positive!
 
     ```ruby
     RubyMemcheck.config(binary_name: "your_binary_name")
     ```
-1. Locate your test task(s) in your Rakefile. You can identify it with a call to `Rake::TestTask.new`.
-1. Create a namespace under the test task and create a `RubyMemcheck::TestTask` with the same configuration.
+1. Setup the test task for your test framework.
+    - **minitest**
+    
+      Locate your test task(s) in your Rakefile. You can identify it with a call to `Rake::TestTask.new`.
 
-    For example, if your Rakefile looked like this before:
+      Create a namespace under the test task and create a `RubyMemcheck::TestTask` with the same configuration.
 
-    ```ruby
-    Rake::TestTask.new(test: :compile) do |t|
-      t.libs << "test"
-      t.test_files = FileList["test/unit/**/*_test.rb"]
-    end
-    ```
+      For example, if your Rakefile looked like this before:
 
-    You can change it to look like this:
+      ```ruby
+      Rake::TestTask.new(test: :compile) do |t|
+        t.libs << "test"
+        t.test_files = FileList["test/unit/**/*_test.rb"]
+      end
+      ```
 
-    ```ruby
-    test_config = lambda do |t|
-      t.libs << "test"
-      t.test_files = FileList["test/**/*_test.rb"]
-    end
-    Rake::TestTask.new(test: :compile, &test_config)
-    namespace :test do
-      RubyMemcheck::TestTask.new(valgrind: :compile, &test_config)
-    end
-    ```
-1. At the top of your `test_helper.rb`/`spec_helper.rb` (or whatever file sets up your test suite), add this line:
+      You can change it to look like this:
 
-    ```ruby
-    at_exit { GC.start }
-    ```
+      ```ruby
+      test_config = lambda do |t|
+        t.libs << "test"
+        t.test_files = FileList["test/**/*_test.rb"]
+      end
+      Rake::TestTask.new(test: :compile, &test_config)
+      namespace :test do
+        RubyMemcheck::TestTask.new(valgrind: :compile, &test_config)
+      end
+      ```
 
-    Place this line as close to the top of the file as possible, before any requires in the file (especially before the call to `require "minitest/autorun"`). This will ensure that the Garbage Collector is ran before Ruby shuts down. This will reduce the number of false-positives.
-1. You're ready to run your test suite with Valgrind using `rake test:valgrind`! Note that this will take a while to run because Valgrind will make Ruby significantly slower.
+    - **RSpec**
+
+      Locate your rake task(s) in your Rakefile. You can identify it with a call to `RSpec::Core::RakeTask.new`.
+
+      Create a namespace under the test task and create a `RubyMemcheck::RSpec::RakeTask` with the same configuration.
+
+      For example, if your Rakefile looked like this before:
+
+      ```ruby
+      RubyMemcheck::RSpec::RakeTask.new(spec: :compile)
+      ```
+
+      You can change it to look like this:
+
+      ```ruby
+      RubyMemcheck::RSpec::RakeTask.new(spec: :compile)
+      namespace :spec do
+        RubyMemcheck::RSpec::RakeTask.new(valgrind: :compile)
+      end
+      ```
+
+1. You're ready to run your test suite with Valgrind using `rake test:valgrind` or `rake spec:valgrind`! Note that this will take a while to run because Valgrind will make Ruby significantly slower.
 1. (Optional) If you find false-positives in the output, you can create suppression files in a `suppressions` directory in the root directory of your gem. In this directory, you can create [Valgrind suppression files](https://wiki.wxwidgets.org/Valgrind_Suppression_File_Howto). The most basic suppression file is `your_binary_name_ruby.supp`. If you want some suppressions for only specific versions of Ruby, you can add the Ruby version to the filename. For example, `your_binary_name_ruby-3.supp` will suppress for any Rubies with a major version of 3 (e.g. 3.0.0, 3.1.1, etc.), while suppression file `your_binary_name_ruby-3.1.supp` will only be used for Ruby with a major and minor version of 3.1 (e.g. 3.1.0, 3.1.1, etc.).
 
 ## License
