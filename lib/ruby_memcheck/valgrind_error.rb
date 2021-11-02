@@ -27,11 +27,7 @@ module RubyMemcheck
     end
 
     def skip?
-      if should_filter?
-        @configuration.skip_stack?(stack)
-      else
-        false
-      end
+      should_filter? && stack.skip?
     end
 
     def to_s

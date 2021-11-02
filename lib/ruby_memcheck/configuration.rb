@@ -74,42 +74,6 @@ module RubyMemcheck
       ].flatten.join(" ")
     end
 
-    def skip_stack?(stack)
-      in_binary = false
-
-      stack.frames.each do |frame|
-        fn = frame.fn
-
-        if frame_in_ruby?(frame) # in ruby
-          unless in_binary
-            # Skip this stack because it was called from Ruby
-            return true if skipped_ruby_functions.any? { |r| r.match?(fn) }
-          end
-        elsif frame_in_binary?(frame) # in binary
-          in_binary = true
-
-          # Skip the Init function
-          return true if fn == "Init_#{binary_name}"
-        end
-      end
-
-      !in_binary
-    end
-
-    def frame_in_ruby?(frame)
-      frame.obj == ruby ||
-        # Hack to fix Ruby built with --enabled-shared
-        File.basename(frame.obj) == "libruby.so.#{RUBY_VERSION}"
-    end
-
-    def frame_in_binary?(frame)
-      if frame.obj
-        File.basename(frame.obj, ".*") == binary_name
-      else
-        false
-      end
-    end
-
     private
 
     def get_valgrind_suppression_files(dir)
