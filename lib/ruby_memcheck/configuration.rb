@@ -13,15 +13,21 @@ module RubyMemcheck
     ].freeze
     DEFAULT_VALGRIND_SUPPRESSIONS_DIR = "suppressions"
     DEFAULT_SKIPPED_RUBY_FUNCTIONS = [
+      /\Aeval_string_with_cref\z/,
+      /\Arb_add_method_cfunc\z/,
       /\Arb_check_funcall/,
+      /\Arb_class_boot\z/, # Called for all the different ways to create a Class
       /\Arb_enc_raise\z/,
       /\Arb_exc_raise\z/,
+      /\Arb_extend_object\z/,
       /\Arb_funcall/,
       /\Arb_intern/,
       /\Arb_ivar_set\z/,
+      /\Arb_module_new\z/,
       /\Arb_raise\z/,
       /\Arb_rescue/,
       /\Arb_respond_to\z/,
+      /\Arb_thread_create\z/, # Threads are relased to a cache, so they may be reported as a leak
       /\Arb_yield/,
     ].freeze
 
