@@ -142,6 +142,24 @@ If you find false positives in the output, you can create suppression files in a
 
 The most basic suppression file is `your_binary_name_ruby.supp`. If you want some suppressions for only specific versions of Ruby, you can add the Ruby version to the filename. For example, `your_binary_name_ruby-3.supp` will suppress for any Rubies with a major version of 3 (e.g. 3.0.0, 3.1.1, etc.), while suppression file `your_binary_name_ruby-3.1.supp` will only be used for Ruby with a major and minor version of 3.1 (e.g. 3.1.0, 3.1.1, etc.).
 
+## Success stories
+
+Let's celebrate wins from this gem! If this gem was useful for you, please share your story below too!
+
+- [`liquid-c`](https://github.com/Shopify/liquid-c):
+  - Found 2 memory leaks: [#157](https://github.com/Shopify/liquid-c/pull/157), [#161](https://github.com/Shopify/liquid-c/pull/161)
+  - Running on CI: [#162](https://github.com/Shopify/liquid-c/pull/162)
+- [`nokogiri`](https://github.com/sparklemotion/nokogiri):
+  - Found 5 memory leaks: [4 in #2345](https://github.com/sparklemotion/nokogiri/pull/2345), [#2347](https://github.com/sparklemotion/nokogiri/pull/2347)
+  - CI is WIP: [#2344](https://github.com/sparklemotion/nokogiri/pull/2344)
+- [`rotoscope`](https://github.com/Shopify/rotoscope):
+  - Found a [memory leak in Ruby TracePoint](https://bugs.ruby-lang.org/issues/18264)
+  - Running on CI: [#89](https://github.com/Shopify/rotoscope/pull/89)
+- [`protobuf`](https://github.com/protocolbuffers/protobuf):
+  - Found 1 memory leak: [#9150](https://github.com/protocolbuffers/protobuf/pull/9150)
+- [`gRPC`](https://github.com/grpc/grpc):
+  - Found 1 memory leak: [#27900](https://github.com/grpc/grpc/pull/27900)
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
