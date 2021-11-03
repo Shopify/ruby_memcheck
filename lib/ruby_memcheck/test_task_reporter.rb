@@ -10,8 +10,9 @@ module RubyMemcheck
 
     def report_valgrind_errors
       if configuration.valgrind_xml_dir
-        parse_valgrind_output
-        remove_valgrind_xml_files
+        xml_files = valgrind_xml_files
+        parse_valgrind_output(xml_files)
+        remove_valgrind_xml_files(xml_files)
 
         unless errors.empty?
           output_valgrind_errors
@@ -20,12 +21,16 @@ module RubyMemcheck
       end
     end
 
-    def parse_valgrind_output
+    def valgrind_xml_files
+      Dir[File.join(configuration.valgrind_xml_dir, "*")]
+    end
+
+    def parse_valgrind_output(xml_files)
       require "nokogiri"
 
       @errors = []
 
-      Dir[File.join(configuration.valgrind_xml_dir, "*")].each do |file|
+      xml_files.each do |file|
         Nokogiri::XML::Reader(File.open(file)).each do |node|
           next unless node.name == "error" && node.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT
           error_xml = Nokogiri::XML::Document.parse(node.outer_xml).root
@@ -36,15 +41,17 @@ module RubyMemcheck
       end
     end
 
+    def remove_valgrind_xml_files(xml_files)
+      xml_files.each do |file|
+        File.delete(file)
+      end
+    end
+
     def output_valgrind_errors
       @errors.each do |error|
         configuration.output_io.puts error
         configuration.output_io.puts
       end
-    end
-
-    def remove_valgrind_xml_files
-      FileUtils.rm_rf(configuration.valgrind_xml_dir)
     end
   end
 end

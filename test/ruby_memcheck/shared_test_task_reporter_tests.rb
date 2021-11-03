@@ -152,6 +152,15 @@ module RubyMemcheck
       assert_match(/^ \*use_after_free \(ruby_memcheck_c_test\.c:\d+\)$/, output)
     end
 
+    def test_can_run_multiple_times
+      2.times do
+        ok = run_with_memcheck(<<~RUBY)
+          RubyMemcheck::CTest.new.no_memory_leak
+        RUBY
+        assert(ok)
+      end
+    end
+
     def test_ruby_failure_without_errors
       ok = run_with_memcheck(<<~RUBY, raise_on_failure: false, spawn_opts: { out: "/dev/null", err: "/dev/null" })
         foobar
