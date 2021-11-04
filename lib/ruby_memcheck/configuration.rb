@@ -71,6 +71,13 @@ module RubyMemcheck
 
     def command(*args)
       [
+        # On some Rubies, not setting the stack size to be ulimited causes
+        # Valgrind to report the following error:
+        #   Invalid write of size 1
+        #     reserve_stack (thread_pthread.c:845)
+        #     ruby_init_stack (thread_pthread.c:871)
+        #     main (main.c:48)
+        "ulimit -s unlimited && ",
         valgrind,
         valgrind_options,
         get_valgrind_suppression_files(valgrind_suppressions_dir).map { |f| "--suppressions=#{f}" },
