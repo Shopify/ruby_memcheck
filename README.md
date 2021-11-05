@@ -26,16 +26,19 @@ Only gems with native extensions can use this gem. If your gem is written in pla
 
 This gem runs Valgrind with the `--xml` option to generate an XML of all the errors. It will then parse the XML and use various heuristics based on the type of the error and the stack trace to filter out errors that are false positives.
 
+For more details, read [this blog post](https://blog.peterzhu.ca/ruby-memcheck/).
+
 ### Limitations
 
 Because of the aggressive heuristics used to filter out false positives, there are various limitations of what this gem can detect.
 
 1. This gem is only expected to work on Linux.
+1. This gem runs your gem's test suite to find errors and memory leaks. It will only be able to report errors on code paths that are covered by your tests. So make sure your test suite has good coverage!
 1. It will not find memory leaks in Ruby. It filters out everything in Ruby.
 1. It will not find memory leaks of allocations that occurred in Ruby (even if the memory leak is caused by your native extension).
 
     An example of this is if a string is allocated in Ruby, passed into your native extension, you change the pointer of the string without freeing the contents, so the contents of the string becomes leaked.
-1. To filter out false-positives, it will only find definite leaks (i.e. memory regions with no pointers to it). It will not find possible leaks (i.e. memory regions with pointers to it).
+1. To filter out false positives, it will only find definite leaks (i.e. memory regions with no pointers to it). It will not find possible leaks (i.e. memory regions with pointers to it).
 1. It will not find leaks that occur in the `Init` function of your native extension.
 1. It will not find uses of undefined values (e.g. conditional jumps depending on undefined values). This is just a technical limitation that has not been solved yet (contributions welcome!).
 
