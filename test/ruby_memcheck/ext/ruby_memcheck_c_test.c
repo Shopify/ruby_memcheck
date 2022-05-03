@@ -8,7 +8,7 @@ static VALUE no_memory_leak(VALUE _)
 }
 
 /* This function must not be inlined to ensure that it has a stack frame. */
-static void __attribute__((noinline)) allocate_memory_leak()
+static void __attribute__((noinline)) allocate_memory_leak(void)
 {
     volatile char *ptr = malloc(100);
     ptr[0] = 'a';
