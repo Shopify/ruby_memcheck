@@ -33,9 +33,11 @@ module RubyMemcheck
       xml_files.each do |file|
         Nokogiri::XML::Reader(File.open(file)).each do |node|
           next unless node.name == "error" && node.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT
+
           error_xml = Nokogiri::XML::Document.parse(node.outer_xml).root
           error = ValgrindError.new(configuration, error_xml)
           next if error.skip?
+
           @errors << error
         end
       end
