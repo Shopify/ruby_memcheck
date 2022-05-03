@@ -70,6 +70,7 @@ The easiest way to use this gem is to use it on your test suite (minitest or RSp
     ```ruby
     RubyMemcheck.config(binary_name: "your_binary_name")
     ```
+
 1. Setup the test task for your test framework.
     - **minitest**
     
@@ -119,6 +120,18 @@ The easiest way to use this gem is to use it on your test suite (minitest or RSp
         RubyMemcheck::RSpec::RakeTask.new(valgrind: :compile)
       end
       ```
+
+1. Add the following line to your `test_helper.rb` or `spec_helper.rb`:
+
+    ```ruby
+    at_exit { GC.start }
+    ```
+
+    This will run a major garbage collection cycle before the Ruby process shuts down. This will ensure that any remaining Ruby objects are collected which will prevent Valgrind from reporting false positives.
+
+    It is safest to add the line above at the very first line of `test_helper.rb` or `spec_helper.rb`.
+
+    - **For minitest:** It is important that the line above is added BEFORE the `require "minitest/autorun"` line.
 
 1. You're ready to run your test suite with Valgrind using `rake test:valgrind` or `rake spec:valgrind`! Note that this will take a while to run because Valgrind will make Ruby significantly slower.
 1. (Optional) If you find false positives in the output, you can create Valgrind suppression files. See the [`Suppression files`](#suppression-files) section for more details.
