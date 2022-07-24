@@ -8,3 +8,6 @@ AllCops:
 Style/GlobalVars:
   Exclude:
     - test/ruby_memcheck/ext/extconf.rb
+
+Layout/CommentIndentation:
+  AllowForAlignment: true

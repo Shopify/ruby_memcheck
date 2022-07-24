@@ -29,6 +29,8 @@ module RubyMemcheck
       /\Arb_respond_to\z/,
       /\Arb_thread_create\z/, # Threads are relased to a cache, so they may be reported as a leak
       /\Arb_yield/,
+      /\Astack_chunk_alloc/, # Remove this after Ruby 2.7.7, 3.0.5, 3.1.3 are relased
+                             # See: https://github.com/Shopify/ruby_memcheck/issues/6
     ].freeze
 
     attr_reader :binary_name, :ruby, :valgrind, :valgrind_options, :valgrind_suppressions_dir,
