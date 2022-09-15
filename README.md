@@ -109,13 +109,13 @@ The easiest way to use this gem is to use it on your test suite (minitest or RSp
       For example, if your Rakefile looked like this before:
 
       ```ruby
-      RubyMemcheck::RSpec::RakeTask.new(spec: :compile)
+      RSpec::Core::RakeTask.new(spec: :compile)
       ```
 
       You can change it to look like this:
 
       ```ruby
-      RubyMemcheck::RSpec::RakeTask.new(spec: :compile)
+      RSpec::Core::RakeTask.new(spec: :compile)
       namespace :spec do
         RubyMemcheck::RSpec::RakeTask.new(valgrind: :compile)
       end
