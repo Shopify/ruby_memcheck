@@ -156,7 +156,7 @@ When you run `RubyMemcheck.config`, you are creating a default `RubyMemcheck::Co
 
 If you find false positives in the output, you can create suppression files in a `suppressions` directory in the root directory of your gem. In this directory, you can create [Valgrind suppression files](https://wiki.wxwidgets.org/Valgrind_Suppression_File_Howto).
 
-The most basic suppression file is `your_binary_name_ruby.supp`. If you want some suppressions for only specific versions of Ruby, you can add the Ruby version to the filename. For example, `your_binary_name_ruby-3.supp` will suppress for any Rubies with a major version of 3 (e.g. 3.0.0, 3.1.1, etc.), while suppression file `your_binary_name_ruby-3.1.supp` will only be used for Ruby with a major and minor version of 3.1 (e.g. 3.1.0, 3.1.1, etc.).
+The most basic suppression file is `ruby.supp`. If you want some suppressions for only specific versions of Ruby, you can add the Ruby version to the filename. For example, `ruby-3.supp` will suppress for any Rubies with a major version of 3 (e.g. 3.0.0, 3.1.1, etc.), while suppression file `ruby-3.1.supp` will only be used for Ruby with a major and minor version of 3.1 (e.g. 3.1.0, 3.1.1, etc.).
 
 ## Success stories
 
