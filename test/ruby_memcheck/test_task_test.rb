@@ -28,7 +28,7 @@ module RubyMemcheck
       @test_task.ruby(
         "-I#{File.join(__dir__, "ext")}",
         script.path,
-        **spawn_opts
+        **spawn_opts,
       ) do |ok_val, status|
         ok = ok_val
 

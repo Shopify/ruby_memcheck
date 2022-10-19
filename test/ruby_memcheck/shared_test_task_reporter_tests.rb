@@ -202,7 +202,7 @@ module RubyMemcheck
       @configuration = Configuration.new(
         binary_name: "ruby_memcheck_c_test",
         output_io: @output_io,
-        **options
+        **options,
       )
       build_test_task
     end

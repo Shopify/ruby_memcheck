@@ -29,11 +29,9 @@ module RubyMemcheck
       /\Arb_respond_to\z/,
       /\Arb_thread_create\z/, # Threads are relased to a cache, so they may be reported as a leak
       /\Arb_yield/,
-      /\Astack_chunk_alloc/, # Remove this after Ruby 2.7.7, 3.0.5, 3.1.3 are relased
-                             # See: https://github.com/Shopify/ruby_memcheck/issues/6
     ].freeze
 
-    attr_reader :binary_name, :ruby, :valgrind, :valgrind_options, :valgrind_suppressions_dir,
+    attr_reader :binary_name, :ruby, :valgrind, :valgrind_options, :valgrind_suppression_files,
       :valgrind_generate_suppressions, :skipped_ruby_functions, :valgrind_xml_dir, :output_io
     alias_method :valgrind_generate_suppressions?, :valgrind_generate_suppressions
 
@@ -52,7 +50,9 @@ module RubyMemcheck
       @ruby = ruby
       @valgrind = valgrind
       @valgrind_options = valgrind_options
-      @valgrind_suppressions_dir = File.expand_path(valgrind_suppressions_dir)
+      @valgrind_suppression_files =
+        get_valgrind_suppression_files(File.join(__dir__, "../../suppressions")) +
+        get_valgrind_suppression_files(valgrind_suppressions_dir)
       @valgrind_generate_suppressions = valgrind_generate_suppressions
       @skipped_ruby_functions = skipped_ruby_functions
       @output_io = output_io
@@ -82,7 +82,7 @@ module RubyMemcheck
         "ulimit -s unlimited && ",
         valgrind,
         valgrind_options,
-        get_valgrind_suppression_files(valgrind_suppressions_dir).map { |f| "--suppressions=#{f}" },
+        valgrind_suppression_files.map { |f| "--suppressions=#{f}" },
         valgrind_generate_suppressions ? "--gen-suppressions=all" : "",
         ruby,
         args,
@@ -92,13 +92,22 @@ module RubyMemcheck
     private
 
     def get_valgrind_suppression_files(dir)
+      dir = File.expand_path(dir)
+
       full_ruby_version = "#{RUBY_ENGINE}-#{RUBY_VERSION}.#{RUBY_PATCHLEVEL}"
       versions = [full_ruby_version]
       (0..3).reverse_each { |i| versions << full_ruby_version.split(".")[0, i].join(".") }
       versions << RUBY_ENGINE
 
       versions.map do |version|
-        Dir[File.join(dir, "#{binary_name}_#{version}.supp")]
+        old_format_files = Dir[File.join(dir, "#{binary_name}_#{version}.supp")]
+
+        unless old_format_files.empty?
+          warn("ruby_memcheck: please migrate your suppression filenames from " \
+            "`gem_name_ruby-3.1.0.supp` to `ruby-3.1.0.supp` (drop the gem name from the filename)")
+        end
+
+        old_format_files + Dir[File.join(dir, "#{version}.supp")]
       end.flatten
     end
   end
