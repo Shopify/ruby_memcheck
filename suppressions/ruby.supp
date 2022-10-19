@@ -19,3 +19,13 @@
   fun:stack_chunk_alloc
   ...
 }
+{
+  recursive_list_access creates a hash called `list` that is stored on the threadptr_recursive_hash. This is reported as a memory leak.
+  Memcheck:Leak
+  ...
+  fun:rb_st_init_table
+  fun:rb_ident_hash_new
+  fun:recursive_list_access
+  fun:exec_recursive
+  ...
+}
