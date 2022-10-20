@@ -40,6 +40,7 @@ module RubyMemcheck
       def spec_command
         # First part of command is Ruby
         args = super.split(" ")[1..]
+        args.unshift("-r" + File.expand_path(File.join(__dir__, "../test_helper.rb")))
 
         configuration.command(args)
       end

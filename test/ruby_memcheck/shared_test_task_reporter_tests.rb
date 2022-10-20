@@ -188,6 +188,18 @@ module RubyMemcheck
       assert_match(/^ \*memory_leak \(ruby_memcheck_c_test\.c:\d+\)$/, output)
     end
 
+    def test_test_helper_is_loaded
+      Tempfile.create do |tempfile|
+        ok = run_with_memcheck(<<~RUBY)
+          File.write(#{tempfile.path.inspect}, $LOADED_FEATURES.join("\n"))
+        RUBY
+
+        assert(ok)
+        assert_empty(@test_task.errors)
+        assert_includes(tempfile.read, File.expand_path(File.join(__dir__, "../../lib/ruby_memcheck/test_helper.rb")))
+      end
+    end
+
     private
 
     def run_with_memcheck(code, raise_on_failure: true, spawn_opts: {})
