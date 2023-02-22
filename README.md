@@ -50,6 +50,24 @@ gem install ruby_memcheck
 
 ## Setup
 
+> **Note**
+> If you encounter errors from Valgrind that looks like this:
+> ```
+> ### unhandled dwarf2 abbrev form code 0x25
+> ```
+> Then you need a newer version of Valgrind (>= 3.20.0) with DWARF5 support.
+> The current versions of Valgrind in Ubuntu Packages is not new enough.
+>
+> You can install Valgrind from source using the following commands:
+> ```
+> wget https://sourceware.org/pub/valgrind/valgrind-3.20.0.tar.bz2
+> tar xvf valgrind-3.20.0.tar.bz2
+> cd valgrind-3.20.0
+> ./configure
+> make
+> sudo make install
+> ```
+
 The easiest way to use this gem is to use it on your test suite (minitest or RSpec) using rake.
 
 0. Install Valgrind.
