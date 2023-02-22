@@ -31,8 +31,16 @@ module RubyMemcheck
       /\Arb_yield/,
     ].freeze
 
-    attr_reader :binary_name, :ruby, :valgrind, :valgrind_options, :valgrind_suppression_files,
-      :valgrind_generate_suppressions, :skipped_ruby_functions, :valgrind_xml_dir, :output_io
+    attr_reader :binary_name
+    attr_reader :ruby
+    attr_reader :valgrind
+    attr_reader :valgrind_options
+    attr_reader :valgrind_suppression_files
+    attr_reader :valgrind_generate_suppressions
+    attr_reader :skipped_ruby_functions
+    attr_reader :valgrind_xml_dir
+    attr_reader :output_io
+
     alias_method :valgrind_generate_suppressions?, :valgrind_generate_suppressions
 
     def initialize(
