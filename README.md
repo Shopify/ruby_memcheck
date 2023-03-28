@@ -159,6 +159,7 @@ When you run `RubyMemcheck.config`, you are creating a default `RubyMemcheck::Co
 - `valgrind_xml_dir`: Optional. The directory to store temporary XML files for Valgrind. It defaults to a temporary directory. This is present for development debugging, so you shouldn't have to use it.
 - `output_io`: Optional. The `IO` object to output Valgrind errors to. Defaults to standard error.
 - `filter_all_errors`: Optional. Whether to filter all kinds of Valgrind errors (not just memory leaks). This feature should only be used if you're encountering a large number of illegal memory accesses coming from Ruby. If you need to use this feature, you may have found a bug inside of Ruby. Consider reporting it to the [Ruby bug tracker](https://bugs.ruby-lang.org/projects/ruby-master/issues/new). Defaults to `false`.
+- `gdb`: Optional. Whether to stop on errors to debug with GDB. Defaults to `false`.
 
 ## Suppression files
 

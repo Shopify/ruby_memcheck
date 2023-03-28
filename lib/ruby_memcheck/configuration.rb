@@ -55,7 +55,8 @@ module RubyMemcheck
       skipped_ruby_functions: DEFAULT_SKIPPED_RUBY_FUNCTIONS,
       valgrind_xml_dir: Dir.mktmpdir,
       output_io: $stderr,
-      filter_all_errors: false
+      filter_all_errors: false,
+      gdb: false
     )
       @binary_name = binary_name
       @ruby = ruby
@@ -80,6 +81,10 @@ module RubyMemcheck
           # See --log-file from https://valgrind.org/docs/manual/manual-core.html
           "--xml-file=#{File.join(valgrind_xml_dir, "%p.out")}",
         ]
+      end
+
+      if gdb
+        @valgrind_options << "--vgdb-error=1"
       end
     end
 
