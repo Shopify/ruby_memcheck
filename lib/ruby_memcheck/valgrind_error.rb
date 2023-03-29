@@ -47,7 +47,7 @@ module RubyMemcheck
     private
 
     def should_filter?
-      kind_leak?
+      @configuration.filter_all_errors? || kind_leak?
     end
 
     def kind_leak?

@@ -28,3 +28,9 @@
   fun:exec_recursive
   ...
 }
+{
+  "Invalid read of size 8" when marking the stack of fibers
+  Memcheck:Addr8
+  fun:each_location*
+  ...
+}

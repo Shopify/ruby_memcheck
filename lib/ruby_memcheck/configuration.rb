@@ -40,8 +40,10 @@ module RubyMemcheck
     attr_reader :skipped_ruby_functions
     attr_reader :valgrind_xml_dir
     attr_reader :output_io
+    attr_reader :filter_all_errors
 
     alias_method :valgrind_generate_suppressions?, :valgrind_generate_suppressions
+    alias_method :filter_all_errors?, :filter_all_errors
 
     def initialize(
       binary_name:,
@@ -52,7 +54,8 @@ module RubyMemcheck
       valgrind_generate_suppressions: false,
       skipped_ruby_functions: DEFAULT_SKIPPED_RUBY_FUNCTIONS,
       valgrind_xml_dir: Dir.mktmpdir,
-      output_io: $stderr
+      output_io: $stderr,
+      filter_all_errors: false
     )
       @binary_name = binary_name
       @ruby = ruby
@@ -64,6 +67,7 @@ module RubyMemcheck
       @valgrind_generate_suppressions = valgrind_generate_suppressions
       @skipped_ruby_functions = skipped_ruby_functions
       @output_io = output_io
+      @filter_all_errors = filter_all_errors
 
       if valgrind_xml_dir
         valgrind_xml_dir = File.expand_path(valgrind_xml_dir)

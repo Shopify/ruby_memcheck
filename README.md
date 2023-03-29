@@ -158,6 +158,7 @@ When you run `RubyMemcheck.config`, you are creating a default `RubyMemcheck::Co
 - `skipped_ruby_functions`: Optional. Ruby functions that are ignored because they are considered a call back into Ruby. This is only present as an escape hatch, so avoid using it. If you find another Ruby function that is a false positive because it calls back into Ruby, please send a patch into this repo. Otherwise, use a Valgrind suppression file.
 - `valgrind_xml_dir`: Optional. The directory to store temporary XML files for Valgrind. It defaults to a temporary directory. This is present for development debugging, so you shouldn't have to use it.
 - `output_io`: Optional. The `IO` object to output Valgrind errors to. Defaults to standard error.
+- `filter_all_errors`: Optional. Whether to filter all kinds of Valgrind errors (not just memory leaks). This feature should only be used if you're encountering a large number of illegal memory accesses coming from Ruby. If you need to use this feature, you may have found a bug inside of Ruby. Consider reporting it to the [Ruby bug tracker](https://bugs.ruby-lang.org/projects/ruby-master/issues/new). Defaults to `false`.
 
 ## Suppression files
 
