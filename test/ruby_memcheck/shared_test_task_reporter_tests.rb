@@ -200,6 +200,24 @@ module RubyMemcheck
       end
     end
 
+    def test_binary_name_with_path_to_binary
+      # Correct path
+      build_configuration(binary_name: "ext/ruby_memcheck_c_test")
+      error = assert_raises do
+        run_with_memcheck(<<~RUBY)
+          RubyMemcheck::CTest.new.memory_leak
+        RUBY
+      end
+      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
+
+      # Incorrect path
+      build_configuration(binary_name: "foobar/ruby_memcheck_c_test")
+      ok = run_with_memcheck(<<~RUBY)
+        RubyMemcheck::CTest.new.memory_leak
+      RUBY
+      assert(ok)
+    end
+
     private
 
     def run_with_memcheck(code, raise_on_failure: true, spawn_opts: {})
@@ -212,7 +230,7 @@ module RubyMemcheck
       **options
     )
       @configuration = Configuration.new(
-        binary_name: "ruby_memcheck_c_test",
+        binary_name: binary_name,
         output_io: @output_io,
         **options,
       )

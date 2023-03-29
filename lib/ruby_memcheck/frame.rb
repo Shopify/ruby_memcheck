@@ -14,17 +14,18 @@ module RubyMemcheck
     end
 
     def in_ruby?
+      return false unless obj
+
       obj == configuration.ruby ||
         # Hack to fix Ruby built with --enabled-shared
         File.basename(obj) == "libruby.so.#{RUBY_VERSION}"
     end
 
     def in_binary?
-      if obj
-        File.basename(obj, ".*") == configuration.binary_name
-      else
-        false
-      end
+      return false unless obj
+
+      binary_name_without_ext = File.join(File.dirname(obj), File.basename(obj, ".*"))
+      binary_name_without_ext.end_with?(File.join("", configuration.binary_name))
     end
 
     def to_s
