@@ -92,7 +92,7 @@ The easiest way to use this gem is to use it on your test suite (minitest or RSp
 
 1. Setup the test task for your test framework.
     - **minitest**
-    
+
       Locate your test task(s) in your Rakefile. You can identify it with a call to `Rake::TestTask.new`.
 
       Create a namespace under the test task and create a `RubyMemcheck::TestTask` with the same configuration.
@@ -183,6 +183,8 @@ Let's celebrate wins from this gem! If this gem was useful for you, please share
   - Found 1 memory leak: [#9150](https://github.com/protocolbuffers/protobuf/pull/9150)
 - [`gRPC`](https://github.com/grpc/grpc):
   - Found 1 memory leak: [#27900](https://github.com/grpc/grpc/pull/27900)
+- [`wasmtime-rb`](https://github.com/bytecodealliance/wasmtime-rb)
+  - Found 1 memory leak: [#26](https://github.com/bytecodealliance/wasmtime-rb/pull/26)
 
 ## License
 
