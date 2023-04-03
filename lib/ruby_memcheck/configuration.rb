@@ -111,7 +111,7 @@ module RubyMemcheck
       (0..3).reverse_each { |i| versions << full_ruby_version.split(".")[0, i].join(".") }
       versions << RUBY_ENGINE
 
-      files = versions.map do |version|
+      versions.map do |version|
         old_format_files = Dir[File.join(dir, "#{binary_name}_#{version}.supp")]
 
         unless old_format_files.empty?
@@ -121,8 +121,6 @@ module RubyMemcheck
 
         old_format_files + Dir[File.join(dir, "#{version}.supp")]
       end.flatten
-
-      files + Dir[File.join(dir, "rust.supp")]
     end
   end
 end

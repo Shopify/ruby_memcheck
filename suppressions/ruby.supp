@@ -34,3 +34,19 @@
   fun:each_location*
   ...
 }
+{
+  Rust probes for statx(buf)
+  Memcheck:Param
+  statx(buf)
+  ...
+  fun:*try_statx*
+  ...
+}
+{
+  Rust probes for statx(file_name)
+  Memcheck:Param
+  statx(file_name)
+  ...
+  fun:*try_statx*
+  ...
+}
