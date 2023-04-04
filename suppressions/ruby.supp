@@ -35,7 +35,7 @@
   ...
 }
 {
-  Rust probes for statx(buf)
+  Rust probes for statx(buf), will be fixed in Valgrind >= 3.1.6.0
   Memcheck:Param
   statx(buf)
   ...
@@ -43,7 +43,7 @@
   ...
 }
 {
-  Rust probes for statx(file_name)
+  Rust probes for statx(file_name), will be fixed in Valgrind >= 3.1.6.0
   Memcheck:Param
   statx(file_name)
   ...
