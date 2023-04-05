@@ -175,7 +175,7 @@ Let's celebrate wins from this gem! If this gem was useful for you, please share
   - Running on CI: [#162](https://github.com/Shopify/liquid-c/pull/162)
 - [`nokogiri`](https://github.com/sparklemotion/nokogiri):
   - Found 5 memory leaks: [4 in #2345](https://github.com/sparklemotion/nokogiri/pull/2345), [#2347](https://github.com/sparklemotion/nokogiri/pull/2347)
-  - CI is WIP: [#2344](https://github.com/sparklemotion/nokogiri/pull/2344)
+  - Running on CI: [#2344](https://github.com/sparklemotion/nokogiri/pull/2344)
 - [`rotoscope`](https://github.com/Shopify/rotoscope):
   - Found a [memory leak in Ruby TracePoint](https://bugs.ruby-lang.org/issues/18264)
   - Running on CI: [#89](https://github.com/Shopify/rotoscope/pull/89)
@@ -183,8 +183,11 @@ Let's celebrate wins from this gem! If this gem was useful for you, please share
   - Found 1 memory leak: [#9150](https://github.com/protocolbuffers/protobuf/pull/9150)
 - [`gRPC`](https://github.com/grpc/grpc):
   - Found 1 memory leak: [#27900](https://github.com/grpc/grpc/pull/27900)
-- [`wasmtime-rb`](https://github.com/bytecodealliance/wasmtime-rb)
+- [`wasmtime-rb`](https://github.com/bytecodealliance/wasmtime-rb):
   - Found 1 memory leak: [#26](https://github.com/bytecodealliance/wasmtime-rb/pull/26)
+- [`yarp`](https://github.com/shopify/yarp):
+  - Found 6 memory leaks and 1 memory error: [#292](https://github.com/Shopify/yarp/pull/304), [#292](https://github.com/Shopify/yarp/pull/292)
+  - Running on CI: [#293](https://github.com/Shopify/yarp/pull/293)
 
 ## License
 
