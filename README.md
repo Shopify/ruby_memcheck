@@ -188,6 +188,9 @@ Let's celebrate wins from this gem! If this gem was useful for you, please share
 - [`yarp`](https://github.com/shopify/yarp):
   - Found 6 memory leaks and 1 memory error: [#292](https://github.com/Shopify/yarp/pull/304), [#292](https://github.com/Shopify/yarp/pull/292)
   - Running on CI: [#293](https://github.com/Shopify/yarp/pull/293)
+- [`libxml2`](https://gitlab.gnome.org/GNOME/libxml2):
+  - Found 1 memory leak: [memory leak from \`xmlSchemaValidateStream\` in v2.11.x (#530)](https://gitlab.gnome.org/GNOME/libxml2/-/issues/530)
+  - Running in Nokogiri's CI pipeline: [#2868](https://github.com/sparklemotion/nokogiri/pull/2868)
 
 ## License
 
