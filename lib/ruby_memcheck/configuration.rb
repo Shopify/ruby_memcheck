@@ -97,6 +97,7 @@ module RubyMemcheck
         valgrind_suppression_files.map { |f| "--suppressions=#{f}" },
         valgrind_generate_suppressions ? "--gen-suppressions=all" : "",
         ruby,
+        "-r" + File.expand_path(File.join(__dir__, "test_helper.rb")),
         args,
       ].flatten.join(" ")
     end

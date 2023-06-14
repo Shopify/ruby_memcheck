@@ -18,7 +18,6 @@ module RubyMemcheck
     end
 
     def ruby(*args, **options, &block)
-      args.unshift("-r" + File.expand_path(File.join(__dir__, "test_helper.rb")))
       command = configuration.command(args)
       sh(command, **options) do |ok, res|
         report_valgrind_errors
