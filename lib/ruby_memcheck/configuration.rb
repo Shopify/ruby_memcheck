@@ -112,16 +112,7 @@ module RubyMemcheck
       (0..3).reverse_each { |i| versions << full_ruby_version.split(".")[0, i].join(".") }
       versions << RUBY_ENGINE
 
-      versions.map do |version|
-        old_format_files = Dir[File.join(dir, "#{binary_name}_#{version}.supp")]
-
-        unless old_format_files.empty?
-          warn("ruby_memcheck: please migrate your suppression filenames from " \
-            "`gem_name_ruby-3.1.0.supp` to `ruby-3.1.0.supp` (drop the gem name from the filename)")
-        end
-
-        old_format_files + Dir[File.join(dir, "#{version}.supp")]
-      end.flatten
+      versions.map { |version| Dir[File.join(dir, "#{version}.supp")] }.flatten
     end
   end
 end
