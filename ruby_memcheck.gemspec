@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["peter@peterzhu.ca"]
 
   spec.summary       = "Use Valgrind memcheck without going crazy"
-  spec.homepage      = "https://github.com/peterzhu2118/ruby_memcheck"
+  spec.homepage      = "https://github.com/Shopify/ruby_memcheck"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
