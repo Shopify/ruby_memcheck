@@ -2,6 +2,6 @@
    suppress memory_leak
    Memcheck:Leak
    ...
-   fun:memory_leak
+   fun:c_test_one_memory_leak
    ...
 }

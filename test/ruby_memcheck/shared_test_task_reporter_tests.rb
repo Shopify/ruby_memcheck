@@ -27,7 +27,7 @@ module RubyMemcheck
       output = @output_io.string
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+      assert_match(/^ \*c_test_one_memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
     end
 
     def test_reports_use_after_free
@@ -43,7 +43,7 @@ module RubyMemcheck
       output = @output_io.string
       refute_empty(output)
       assert_match(/^Invalid write of size 1$/, output)
-      assert_match(/^ \*use_after_free \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+      assert_match(/^ \*c_test_one_use_after_free \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
     end
 
     # Potential improvement: support uninitialized values
@@ -107,10 +107,10 @@ module RubyMemcheck
       output = @output_io.string
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+      assert_match(/^ \*c_test_one_memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
       assert_match(/^  insert_a_suppression_name_here/, output)
       assert_match(/^  Memcheck:Leak/, output)
-      assert_match(/^  fun:allocate_memory_leak/, output)
+      assert_match(/^  fun:c_test_one_allocate_memory_leak/, output)
     end
 
     def test_follows_forked_children
@@ -130,7 +130,7 @@ module RubyMemcheck
       output = @output_io.string
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+      assert_match(/^ \*c_test_one_memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
     end
 
     def test_reports_multiple_errors
@@ -148,9 +148,9 @@ module RubyMemcheck
 
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+      assert_match(/^ \*c_test_one_memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
       assert_match(/^Invalid write of size 1$/, output)
-      assert_match(/^ \*use_after_free \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+      assert_match(/^ \*c_test_one_use_after_free \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
     end
 
     def test_reports_errors_in_all_binaries
@@ -168,8 +168,8 @@ module RubyMemcheck
 
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_two\.c:\d+\)$/, output)
+      assert_match(/^ \*c_test_one_memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+      assert_match(/^ \*c_test_two_memory_leak \(ruby_memcheck_c_test_two\.c:\d+\)$/, output)
     end
 
     def test_can_run_multiple_times
@@ -208,7 +208,7 @@ module RubyMemcheck
       output = @output_io.string
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+      assert_match(/^ \*c_test_one_memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
     end
 
     def test_test_helper_is_loaded
