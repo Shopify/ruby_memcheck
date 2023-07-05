@@ -169,6 +169,9 @@ module RubyMemcheck
       refute(ok)
       assert_empty(@test_task.errors)
       assert_empty(@output_io.string)
+    rescue
+      $stderr.puts(@test_task.reporter.errors)
+      raise
     end
 
     def test_ruby_failure_with_errors
