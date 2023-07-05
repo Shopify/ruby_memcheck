@@ -18,7 +18,8 @@ module RubyMemcheck
     def run_with_memcheck(code, raise_on_failure: true, spawn_opts: {})
       script = Tempfile.new
       script.write(<<~RUBY)
-        require "ruby_memcheck_c_test"
+        require "ruby_memcheck_c_test_one"
+        require "ruby_memcheck_c_test_two"
         #{code}
       RUBY
       script.flush

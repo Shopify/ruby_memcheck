@@ -1,36 +1,61 @@
 # frozen_string_literal: true
 
 module RubyMemcheck
-  module TestTaskReporter
+  class TestTaskReporter
     VALGRIND_REPORT_MSG = "Valgrind reported errors (e.g. memory leak or use-after-free)"
 
+    attr_reader :configuration
     attr_reader :errors
 
-    private
+    def initialize(configuration)
+      @configuration = configuration
+      @loaded_binaries = nil
+    end
+
+    def run_ruby_with_valgrind(&block)
+      setup
+      yield
+      report_valgrind_errors
+    end
+
+    def setup
+      ENV["RUBY_MEMCHECK_LOADED_FEATURES_FILE"] = File.expand_path(configuration.loaded_features_file)
+    end
 
     def report_valgrind_errors
-      if configuration.valgrind_xml_dir
-        xml_files = valgrind_xml_files
-        parse_valgrind_output(xml_files)
-        remove_valgrind_xml_files(xml_files)
+      parse_valgrind_output
+      remove_valgrind_xml_files
 
-        unless errors.empty?
-          output_valgrind_errors
-          raise VALGRIND_REPORT_MSG
-        end
+      unless errors.empty?
+        output_valgrind_errors
+        raise VALGRIND_REPORT_MSG
       end
     end
 
-    def valgrind_xml_files
-      Dir[File.join(configuration.valgrind_xml_dir, "*")]
+    private
+
+    def loaded_binaries
+      return @loaded_binaries if @loaded_binaries
+
+      loaded_features = File.readlines(configuration.loaded_features_file, chomp: true)
+      @loaded_binaries = loaded_features.keep_if do |feat|
+        # Keep only binaries (ignore Ruby files).
+        File.extname(feat) == ".so"
+      end.freeze
+
+      @loaded_binaries
     end
 
-    def parse_valgrind_output(xml_files)
+    def valgrind_xml_files
+      @valgrind_xml_files ||= Dir[File.join(configuration.temp_dir, "*.xml")].freeze
+    end
+
+    def parse_valgrind_output
       require "nokogiri"
 
       @errors = []
 
-      xml_files.each do |file|
+      valgrind_xml_files.each do |file|
         reader = Nokogiri::XML::Reader(File.open(file)) do |config| # rubocop:disable Style/SymbolProc
           config.huge
         end
@@ -38,7 +63,7 @@ module RubyMemcheck
           next unless node.name == "error" && node.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT
 
           error_xml = Nokogiri::XML::Document.parse(node.outer_xml).root
-          error = ValgrindError.new(configuration, error_xml)
+          error = ValgrindError.new(configuration, loaded_binaries, error_xml)
           next if error.skip?
 
           @errors << error
@@ -46,8 +71,8 @@ module RubyMemcheck
       end
     end
 
-    def remove_valgrind_xml_files(xml_files)
-      xml_files.each do |file|
+    def remove_valgrind_xml_files
+      valgrind_xml_files.each do |file|
         File.delete(file)
       end
     end

@@ -2,9 +2,8 @@
 
 module RubyMemcheck
   class TestTask < Rake::TestTask
-    include TestTaskReporter
-
     attr_reader :configuration
+    attr_reader :reporter
 
     def initialize(*args)
       @configuration =
@@ -19,8 +18,13 @@ module RubyMemcheck
 
     def ruby(*args, **options, &block)
       command = configuration.command(args)
+
+      @reporter = TestTaskReporter.new(configuration)
+
+      @reporter.setup
+
       sh(command, **options) do |ok, res|
-        report_valgrind_errors
+        @reporter.report_valgrind_errors
 
         yield ok, res if block_given?
       end

@@ -6,7 +6,7 @@ require "nokogiri"
 module RubyMemcheck
   class ValgrindErrorTest < Minitest::Test
     def setup
-      @configuration = Configuration.new(binary_name: "ruby_memcheck_c_test")
+      @configuration = Configuration.new
     end
 
     def test_raises_when_suppressions_generated_but_not_configured
@@ -30,7 +30,7 @@ module RubyMemcheck
       XML
 
       error = assert_raises do
-        RubyMemcheck::ValgrindError.new(@configuration, output)
+        RubyMemcheck::ValgrindError.new(@configuration, [], output)
       end
       assert_equal(ValgrindError::SUPPRESSION_NOT_CONFIGURED_ERROR_MSG, error.message)
     end

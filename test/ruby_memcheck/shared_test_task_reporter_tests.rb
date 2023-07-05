@@ -6,64 +6,64 @@ module RubyMemcheck
   module SharedTestTaskReporterTests
     def test_succeeds_when_there_is_no_memory_leak
       ok = run_with_memcheck(<<~RUBY)
-        RubyMemcheck::CTest.new.no_memory_leak
+        RubyMemcheck::CTestOne.new.no_memory_leak
       RUBY
 
       assert(ok)
-      assert_empty(@test_task.errors)
+      assert_empty(@test_task.reporter.errors)
       assert_empty(@output_io.string)
     end
 
     def test_reports_memory_leak
       error = assert_raises do
         run_with_memcheck(<<~RUBY)
-          RubyMemcheck::CTest.new.memory_leak
+          RubyMemcheck::CTestOne.new.memory_leak
         RUBY
       end
-      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
 
-      assert_equal(1, @test_task.errors.length)
+      assert_equal(1, @test_task.reporter.errors.length)
 
       output = @output_io.string
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test\.c:\d+\)$/, output)
+      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
     end
 
     def test_reports_use_after_free
       error = assert_raises do
         run_with_memcheck(<<~RUBY)
-          RubyMemcheck::CTest.new.use_after_free
+          RubyMemcheck::CTestOne.new.use_after_free
         RUBY
       end
-      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
 
-      assert_equal(1, @test_task.errors.length)
+      assert_equal(1, @test_task.reporter.errors.length)
 
       output = @output_io.string
       refute_empty(output)
       assert_match(/^Invalid write of size 1$/, output)
-      assert_match(/^ \*use_after_free \(ruby_memcheck_c_test\.c:\d+\)$/, output)
+      assert_match(/^ \*use_after_free \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
     end
 
     # Potential improvement: support uninitialized values
     def test_does_not_report_uninitialized_value
       run_with_memcheck(<<~RUBY)
-        RubyMemcheck::CTest.new.uninitialized_value
+        RubyMemcheck::CTestOne.new.uninitialized_value
       RUBY
 
-      assert_equal(0, @test_task.errors.length)
-      assert_empty(@test_task.errors)
+      assert_equal(0, @test_task.reporter.errors.length)
+      assert_empty(@test_task.reporter.errors)
       assert_empty(@output_io.string)
     end
 
     def test_call_into_ruby_mem_leak_does_not_report
       ok = run_with_memcheck(<<~RUBY)
-        RubyMemcheck::CTest.new.call_into_ruby_mem_leak
+        RubyMemcheck::CTestOne.new.call_into_ruby_mem_leak
       RUBY
 
       assert(ok)
-      assert_empty(@test_task.errors)
+      assert_empty(@test_task.reporter.errors)
       assert_empty(@output_io.string)
     end
 
@@ -72,23 +72,23 @@ module RubyMemcheck
 
       error = assert_raises do
         run_with_memcheck(<<~RUBY)
-          RubyMemcheck::CTest.new.call_into_ruby_mem_leak
+          RubyMemcheck::CTestOne.new.call_into_ruby_mem_leak
         RUBY
       end
-      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
 
-      assert_operator(@test_task.errors.length, :>=, 1)
+      assert_operator(@test_task.reporter.errors.length, :>=, 1)
     end
 
     def test_suppressions
       build_configuration(valgrind_suppressions_dir: File.join(__dir__, "suppressions"))
 
       ok = run_with_memcheck(<<~RUBY)
-        RubyMemcheck::CTest.new.memory_leak
+        RubyMemcheck::CTestOne.new.memory_leak
       RUBY
 
       assert(ok)
-      assert_empty(@test_task.errors)
+      assert_empty(@test_task.reporter.errors)
       assert_empty(@output_io.string)
     end
 
@@ -97,17 +97,17 @@ module RubyMemcheck
 
       error = assert_raises do
         run_with_memcheck(<<~RUBY)
-          RubyMemcheck::CTest.new.memory_leak
+          RubyMemcheck::CTestOne.new.memory_leak
         RUBY
       end
-      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
 
-      assert_equal(1, @test_task.errors.length)
+      assert_equal(1, @test_task.reporter.errors.length)
 
       output = @output_io.string
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test\.c:\d+\)$/, output)
+      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
       assert_match(/^  insert_a_suppression_name_here/, output)
       assert_match(/^  Memcheck:Leak/, output)
       assert_match(/^  fun:allocate_memory_leak/, output)
@@ -117,45 +117,63 @@ module RubyMemcheck
       error = assert_raises do
         run_with_memcheck(<<~RUBY)
           pid = Process.fork do
-            RubyMemcheck::CTest.new.memory_leak
+            RubyMemcheck::CTestOne.new.memory_leak
           end
 
           Process.wait(pid)
         RUBY
       end
-      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
 
-      assert_equal(1, @test_task.errors.length)
+      assert_equal(1, @test_task.reporter.errors.length)
 
       output = @output_io.string
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test\.c:\d+\)$/, output)
+      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
     end
 
     def test_reports_multiple_errors
       error = assert_raises do
         run_with_memcheck(<<~RUBY)
-          RubyMemcheck::CTest.new.memory_leak
-          RubyMemcheck::CTest.new.use_after_free
+          RubyMemcheck::CTestOne.new.memory_leak
+          RubyMemcheck::CTestOne.new.use_after_free
         RUBY
       end
-      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
 
-      assert_equal(2, @test_task.errors.length)
+      assert_equal(2, @test_task.reporter.errors.length)
 
       output = @output_io.string
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test\.c:\d+\)$/, output)
+      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
       assert_match(/^Invalid write of size 1$/, output)
-      assert_match(/^ \*use_after_free \(ruby_memcheck_c_test\.c:\d+\)$/, output)
+      assert_match(/^ \*use_after_free \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+    end
+
+    def test_reports_errors_in_all_binaries
+      error = assert_raises do
+        run_with_memcheck(<<~RUBY)
+          RubyMemcheck::CTestOne.new.memory_leak
+          RubyMemcheck::CTestTwo.new.memory_leak
+        RUBY
+      end
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
+
+      assert_equal(2, @test_task.reporter.errors.length)
+
+      output = @output_io.string
+      refute_empty(output)
+      assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
+      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_two\.c:\d+\)$/, output)
     end
 
     def test_can_run_multiple_times
       2.times do
         ok = run_with_memcheck(<<~RUBY)
-          RubyMemcheck::CTest.new.no_memory_leak
+          RubyMemcheck::CTestOne.new.no_memory_leak
         RUBY
         assert(ok)
       end
@@ -167,7 +185,7 @@ module RubyMemcheck
       RUBY
 
       refute(ok)
-      assert_empty(@test_task.errors)
+      assert_empty(@test_task.reporter.errors)
       assert_empty(@output_io.string)
     rescue
       $stderr.puts(@test_task.reporter.errors)
@@ -177,18 +195,18 @@ module RubyMemcheck
     def test_ruby_failure_with_errors
       error = assert_raises do
         run_with_memcheck(<<~RUBY, raise_on_failure: false, spawn_opts: { out: "/dev/null", err: "/dev/null" })
-          RubyMemcheck::CTest.new.memory_leak
+          RubyMemcheck::CTestOne.new.memory_leak
           raise
         RUBY
       end
-      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
 
-      assert_equal(1, @test_task.errors.length)
+      assert_equal(1, @test_task.reporter.errors.length)
 
       output = @output_io.string
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
-      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test\.c:\d+\)$/, output)
+      assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
     end
 
     def test_test_helper_is_loaded
@@ -198,27 +216,9 @@ module RubyMemcheck
         RUBY
 
         assert(ok)
-        assert_empty(@test_task.errors)
+        assert_empty(@test_task.reporter.errors)
         assert_includes(tempfile.read, File.expand_path(File.join(__dir__, "../../lib/ruby_memcheck/test_helper.rb")))
       end
-    end
-
-    def test_binary_name_with_path_to_binary
-      # Correct path
-      build_configuration(binary_name: "ext/ruby_memcheck_c_test")
-      error = assert_raises do
-        run_with_memcheck(<<~RUBY)
-          RubyMemcheck::CTest.new.memory_leak
-        RUBY
-      end
-      assert_equal(RubyMemcheck::TestTask::VALGRIND_REPORT_MSG, error.message)
-
-      # Incorrect path
-      build_configuration(binary_name: "foobar/ruby_memcheck_c_test")
-      ok = run_with_memcheck(<<~RUBY)
-        RubyMemcheck::CTest.new.memory_leak
-      RUBY
-      assert(ok)
     end
 
     private
@@ -228,12 +228,10 @@ module RubyMemcheck
     end
 
     def build_configuration(
-      binary_name: "ruby_memcheck_c_test",
       output_io: @output_io,
       **options
     )
       @configuration = Configuration.new(
-        binary_name: binary_name,
         output_io: @output_io,
         **options,
       )

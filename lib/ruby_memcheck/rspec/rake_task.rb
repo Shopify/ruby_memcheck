@@ -5,9 +5,8 @@ require "rspec/core/rake_task"
 module RubyMemcheck
   module RSpec
     class RakeTask < ::RSpec::Core::RakeTask
-      include TestTaskReporter
-
       attr_reader :configuration
+      attr_reader :reporter
 
       def initialize(*args)
         @configuration =
@@ -23,14 +22,13 @@ module RubyMemcheck
       def run_task(verbose)
         error = nil
 
-        begin
+        @reporter = TestTaskReporter.new(configuration)
+        @reporter.run_ruby_with_valgrind do
           # RSpec::Core::RakeTask#run_task calls Kernel.exit on failure
           super
         rescue SystemExit => e
           error = e
         end
-
-        report_valgrind_errors
 
         raise error if error
       end

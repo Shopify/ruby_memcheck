@@ -1,6 +1,6 @@
 #include <ruby.h>
 
-VALUE cRubyMemcheckCTest;
+static VALUE cRubyMemcheckCTestOne;
 
 static VALUE no_memory_leak(VALUE _)
 {
@@ -46,18 +46,18 @@ static VALUE call_into_ruby_mem_leak(VALUE obj)
     return Qnil;
 }
 
-void Init_ruby_memcheck_c_test(void)
+void Init_ruby_memcheck_c_test_one(void)
 {
     /* Memory leaks in the Init functions should be ignored. */
     allocate_memory_leak();
 
     VALUE mRubyMemcheck = rb_define_module("RubyMemcheck");
-    cRubyMemcheckCTest = rb_define_class_under(mRubyMemcheck, "CTest", rb_cObject);
-    rb_global_variable(&cRubyMemcheckCTest);
+    cRubyMemcheckCTestOne = rb_define_class_under(mRubyMemcheck, "CTestOne", rb_cObject);
+    rb_global_variable(&cRubyMemcheckCTestOne);
 
-    rb_define_method(cRubyMemcheckCTest, "no_memory_leak", no_memory_leak,  0);
-    rb_define_method(cRubyMemcheckCTest, "memory_leak", memory_leak, 0);
-    rb_define_method(cRubyMemcheckCTest, "use_after_free", use_after_free, 0);
-    rb_define_method(cRubyMemcheckCTest, "uninitialized_value", uninitialized_value, 0);
-    rb_define_method(cRubyMemcheckCTest, "call_into_ruby_mem_leak", call_into_ruby_mem_leak, 0);
+    rb_define_method(cRubyMemcheckCTestOne, "no_memory_leak", no_memory_leak, 0);
+    rb_define_method(cRubyMemcheckCTestOne, "memory_leak", memory_leak, 0);
+    rb_define_method(cRubyMemcheckCTestOne, "use_after_free", use_after_free, 0);
+    rb_define_method(cRubyMemcheckCTestOne, "uninitialized_value", uninitialized_value, 0);
+    rb_define_method(cRubyMemcheckCTestOne, "call_into_ruby_mem_leak", call_into_ruby_mem_leak, 0);
 }
