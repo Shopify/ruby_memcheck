@@ -142,9 +142,10 @@ module RubyMemcheck
       end
       assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
 
-      assert_equal(2, @test_task.reporter.errors.length)
-
       output = @output_io.string
+
+      assert_equal(2, @test_task.reporter.errors.length, output)
+
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
       assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
@@ -161,9 +162,10 @@ module RubyMemcheck
       end
       assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
 
-      assert_equal(2, @test_task.reporter.errors.length)
-
       output = @output_io.string
+
+      assert_equal(2, @test_task.reporter.errors.length, output)
+
       refute_empty(output)
       assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
       assert_match(/^ \*memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
