@@ -84,12 +84,6 @@ The easiest way to use this gem is to use it on your test suite (minitest or RSp
       require "ruby_memcheck/rspec/rake_task"
       ```
 
-1. Configure the gem by calling `RubyMemcheck.config`. You must pass it your binary name. This is the same value you passed into `create_makefile` in your `extconf.rb` file. Make sure this value is correct or it will filter out almost everything as a false-positive!
-
-    ```ruby
-    RubyMemcheck.config(binary_name: "your_binary_name")
-    ```
-
 1. Setup the test task for your test framework.
     - **minitest**
 
@@ -145,11 +139,10 @@ The easiest way to use this gem is to use it on your test suite (minitest or RSp
 
 ## Configuration
 
-When you run `RubyMemcheck.config`, you are creating a default `RubyMemcheck::Configuration`. By default, the Rake tasks for minitest and RSpec will use this configuration. You can also manually pass in a `Configuration` object as the first argument to the constructor of `RubyMemcheck::TestTask` or `RubyMemcheck::RSpec::RakeTask` to use a different `Configuration` object rather than the default one.
+If you want to override any of the default configurations you can call `RubyMemcheck.config` after `require "ruby_memcheck"`. This will create a default `RubyMemcheck::Configuration`. By default, the Rake tasks for minitest and RSpec will use this configuration. You can also manually pass in a `Configuration` object as the first argument to the constructor of `RubyMemcheck::TestTask` or `RubyMemcheck::RSpec::RakeTask` to use a different `Configuration` object rather than the default one.
 
 `RubyMemcheck::Configuration` accepts a variety of keyword arguments. Here are all the arguments:
 
-- `binary_name`: Required. The binary name of your native extension gem. This is the same value you passed into `create_makefile` in your `extconf.rb` file.
 - `ruby`: Optional. The command to run to invoke Ruby. Defaults to the Ruby that is currently being used.
 - `valgrind`: Optional. The command to run to invoke Valgrind. Defaults to the string `"valgrind"`.
 - `valgrind_options`: Optional. Array of options to pass into Valgrind. This is only present as an escape hatch, so avoid using it. This may be deprecated or removed in future versions.
