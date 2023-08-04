@@ -20,6 +20,7 @@ module RubyMemcheck
 
     def setup
       ENV["RUBY_MEMCHECK_LOADED_FEATURES_FILE"] = File.expand_path(configuration.loaded_features_file)
+      ENV["RUBY_MEMCHECK_RUNNING"] = "1"
     end
 
     def report_valgrind_errors
