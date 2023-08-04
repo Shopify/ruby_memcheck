@@ -50,3 +50,11 @@
   fun:*try_statx*
   ...
 }
+{
+  strscan_do_scan in strscan.c will sometimes replace the ptr of the regex, which can be reported as a memory leak if the regex is stored in an iseq. https://github.com/ruby/ruby/pull/8136
+  Memcheck:Leak
+  ...
+  fun:rb_reg_prepare_re
+  fun:strscan_do_scan
+  ...
+}

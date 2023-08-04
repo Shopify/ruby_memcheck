@@ -32,9 +32,10 @@ module RubyMemcheck
             $stdout.reopen(File.open("#{stdout_log.path}", "w"))
 
             $LOAD_PATH.unshift("#{File.join(__dir__, "../ext")}")
-            require "ruby_memcheck_c_test"
+            require "ruby_memcheck_c_test_one"
+            require "ruby_memcheck_c_test_two"
 
-            RSpec.describe RubyMemcheck::CTest do
+            RSpec.describe RubyMemcheck do
               it "test" do
                 #{code}
               end

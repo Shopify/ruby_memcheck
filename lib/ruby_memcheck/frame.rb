@@ -2,10 +2,12 @@
 
 module RubyMemcheck
   class Frame
-    attr_reader :configuration, :fn, :obj, :file, :line
+    attr_reader :configuration, :loaded_binaries, :fn, :obj, :file, :line
 
-    def initialize(configuration, frame_xml)
+    def initialize(configuration, loaded_binaries, frame_xml)
       @configuration = configuration
+      @loaded_binaries = loaded_binaries
+
       @fn = frame_xml.at_xpath("fn")&.content
       @obj = frame_xml.at_xpath("obj")&.content
       # file and line may not be available
@@ -24,8 +26,14 @@ module RubyMemcheck
     def in_binary?
       return false unless obj
 
-      binary_name_without_ext = File.join(File.dirname(obj), File.basename(obj, ".*"))
-      binary_name_without_ext.end_with?(File.join("", configuration.binary_name))
+      loaded_binaries.include?(obj)
+    end
+
+    def binary_init_func?
+      return false unless in_binary?
+
+      binary_name = File.basename(obj, ".*")
+      fn == "Init_#{binary_name}"
     end
 
     def to_s

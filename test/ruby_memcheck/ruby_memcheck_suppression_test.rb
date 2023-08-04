@@ -6,7 +6,7 @@ require "nokogiri"
 module RubyMemcheck
   class RubyMemcheckSuppressionTest < Minitest::Test
     def setup
-      @configuration = Configuration.new(binary_name: "ruby_memcheck_c_test")
+      @configuration = Configuration.new
     end
 
     def test_given_a_suppression_node

@@ -31,14 +31,14 @@ module RubyMemcheck
       /\Arb_yield/,
     ].freeze
 
-    attr_reader :binary_name
     attr_reader :ruby
     attr_reader :valgrind
     attr_reader :valgrind_options
     attr_reader :valgrind_suppression_files
     attr_reader :valgrind_generate_suppressions
     attr_reader :skipped_ruby_functions
-    attr_reader :valgrind_xml_dir
+    attr_reader :temp_dir
+    attr_reader :loaded_features_file
     attr_reader :output_io
     attr_reader :filter_all_errors
 
@@ -46,18 +46,19 @@ module RubyMemcheck
     alias_method :filter_all_errors?, :filter_all_errors
 
     def initialize(
-      binary_name:,
+      binary_name: nil,
       ruby: FileUtils::RUBY,
       valgrind: DEFAULT_VALGRIND,
       valgrind_options: DEFAULT_VALGRIND_OPTIONS,
       valgrind_suppressions_dir: DEFAULT_VALGRIND_SUPPRESSIONS_DIR,
       valgrind_generate_suppressions: false,
       skipped_ruby_functions: DEFAULT_SKIPPED_RUBY_FUNCTIONS,
-      valgrind_xml_dir: Dir.mktmpdir,
+      temp_dir: Dir.mktmpdir,
       output_io: $stderr,
       filter_all_errors: false
     )
-      @binary_name = binary_name
+      warn("ruby_memcheck: binary_name is no longer required for configuration") if binary_name
+
       @ruby = ruby
       @valgrind = valgrind
       @valgrind_options = valgrind_options
@@ -69,18 +70,18 @@ module RubyMemcheck
       @output_io = output_io
       @filter_all_errors = filter_all_errors
 
-      if valgrind_xml_dir
-        valgrind_xml_dir = File.expand_path(valgrind_xml_dir)
-        FileUtils.mkdir_p(valgrind_xml_dir)
-        @valgrind_xml_dir = valgrind_xml_dir
-        @valgrind_options += [
-          "--xml=yes",
-          # %p will be replaced with the PID
-          # This prevents forking and shelling out from generating a corrupted XML
-          # See --log-file from https://valgrind.org/docs/manual/manual-core.html
-          "--xml-file=#{File.join(valgrind_xml_dir, "%p.out")}",
-        ]
-      end
+      temp_dir = File.expand_path(temp_dir)
+      FileUtils.mkdir_p(temp_dir)
+      @temp_dir = temp_dir
+      @valgrind_options += [
+        "--xml=yes",
+        # %p will be replaced with the PID
+        # This prevents forking and shelling out from generating a corrupted XML
+        # See --log-file from https://valgrind.org/docs/manual/manual-core.html
+        "--xml-file=#{File.join(temp_dir, "%p.xml")}",
+      ]
+
+      @loaded_features_file = Tempfile.create("", @temp_dir)
     end
 
     def command(*args)
@@ -112,7 +113,9 @@ module RubyMemcheck
       (0..3).reverse_each { |i| versions << full_ruby_version.split(".")[0, i].join(".") }
       versions << RUBY_ENGINE
 
-      versions.map { |version| Dir[File.join(dir, "#{version}.supp")] }.flatten
+      versions.map do |version|
+        Dir[File.join(dir, "#{version}.supp")]
+      end.flatten
     end
   end
 end

@@ -11,9 +11,16 @@ Rake::TestTask.new(test: "test:compile") do |t|
 end
 
 namespace :test do
-  Rake::ExtensionTask.new("ruby_memcheck_c_test") do |ext|
+  Rake::ExtensionTask.new("ruby_memcheck_c_test_one") do |ext|
     ext.ext_dir = "test/ruby_memcheck/ext"
     ext.lib_dir = "test/ruby_memcheck/ext"
+    ext.config_script = "extconf_one.rb"
+  end
+
+  Rake::ExtensionTask.new("ruby_memcheck_c_test_two") do |ext|
+    ext.ext_dir = "test/ruby_memcheck/ext"
+    ext.lib_dir = "test/ruby_memcheck/ext"
+    ext.config_script = "extconf_two.rb"
   end
 end
 

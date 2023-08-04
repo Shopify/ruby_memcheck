@@ -7,7 +7,7 @@ module RubyMemcheck
 
     attr_reader :kind, :msg, :stack, :suppression
 
-    def initialize(configuration, error)
+    def initialize(configuration, loaded_binaries, error)
       @kind = error.at_xpath("kind").content
       @msg =
         if kind_leak?
@@ -15,7 +15,7 @@ module RubyMemcheck
         else
           error.at_xpath("what").content
         end
-      @stack = Stack.new(configuration, error.at_xpath("stack"))
+      @stack = Stack.new(configuration, loaded_binaries, error.at_xpath("stack"))
       @configuration = configuration
 
       suppression_node = error.at_xpath("suppression")

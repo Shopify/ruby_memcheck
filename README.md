@@ -84,12 +84,6 @@ The easiest way to use this gem is to use it on your test suite (minitest or RSp
       require "ruby_memcheck/rspec/rake_task"
       ```
 
-1. Configure the gem by calling `RubyMemcheck.config`. You must pass it your binary name. This is the same value you passed into `create_makefile` in your `extconf.rb` file. Make sure this value is correct or it will filter out almost everything as a false-positive!
-
-    ```ruby
-    RubyMemcheck.config(binary_name: "your_binary_name")
-    ```
-
 1. Setup the test task for your test framework.
     - **minitest**
 
@@ -145,18 +139,17 @@ The easiest way to use this gem is to use it on your test suite (minitest or RSp
 
 ## Configuration
 
-When you run `RubyMemcheck.config`, you are creating a default `RubyMemcheck::Configuration`. By default, the Rake tasks for minitest and RSpec will use this configuration. You can also manually pass in a `Configuration` object as the first argument to the constructor of `RubyMemcheck::TestTask` or `RubyMemcheck::RSpec::RakeTask` to use a different `Configuration` object rather than the default one.
+If you want to override any of the default configurations you can call `RubyMemcheck.config` after `require "ruby_memcheck"`. This will create a default `RubyMemcheck::Configuration`. By default, the Rake tasks for minitest and RSpec will use this configuration. You can also manually pass in a `Configuration` object as the first argument to the constructor of `RubyMemcheck::TestTask` or `RubyMemcheck::RSpec::RakeTask` to use a different `Configuration` object rather than the default one.
 
 `RubyMemcheck::Configuration` accepts a variety of keyword arguments. Here are all the arguments:
 
-- `binary_name`: Required. The binary name of your native extension gem. This is the same value you passed into `create_makefile` in your `extconf.rb` file.
 - `ruby`: Optional. The command to run to invoke Ruby. Defaults to the Ruby that is currently being used.
 - `valgrind`: Optional. The command to run to invoke Valgrind. Defaults to the string `"valgrind"`.
 - `valgrind_options`: Optional. Array of options to pass into Valgrind. This is only present as an escape hatch, so avoid using it. This may be deprecated or removed in future versions.
 - `valgrind_suppressions_dir`: Optional. The string path of the directory that stores suppression files for Valgrind. See the [`Suppression files`](#suppression-files) section for more details. Defaults to `suppressions`.
 - `valgrind_generate_suppressions`: Optional. Whether suppressions should also be outputted along with the errors. the [`Suppression files`](#suppression-files) section for more details. Defaults to `false`.
 - `skipped_ruby_functions`: Optional. Ruby functions that are ignored because they are considered a call back into Ruby. This is only present as an escape hatch, so avoid using it. If you find another Ruby function that is a false positive because it calls back into Ruby, please send a patch into this repo. Otherwise, use a Valgrind suppression file.
-- `valgrind_xml_dir`: Optional. The directory to store temporary XML files for Valgrind. It defaults to a temporary directory. This is present for development debugging, so you shouldn't have to use it.
+- `temp_dir`: Optional. The directory to store temporary files. It defaults to a temporary directory. This is present for development debugging, so you shouldn't have to use it.
 - `output_io`: Optional. The `IO` object to output Valgrind errors to. Defaults to standard error.
 - `filter_all_errors`: Optional. Whether to filter all kinds of Valgrind errors (not just memory leaks). This feature should only be used if you're encountering a large number of illegal memory accesses coming from Ruby. If you need to use this feature, you may have found a bug inside of Ruby. Consider reporting it to the [Ruby bug tracker](https://bugs.ruby-lang.org/projects/ruby-master/issues/new). Defaults to `false`.
 

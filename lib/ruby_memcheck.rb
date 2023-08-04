@@ -19,11 +19,7 @@ module RubyMemcheck
     end
 
     def default_configuration
-      unless @default_configuration
-        raise "RubyMemcheck is not configured with a default configuration. "\
-          "Please run RubyMemcheck.config before using it."
-      end
-      @default_configuration
+      @default_configuration ||= config
     end
   end
 end
