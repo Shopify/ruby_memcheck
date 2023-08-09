@@ -23,9 +23,9 @@ jobs:
       - run: sudo apt-get install -y libc6-dbg
       - name: Install Valgrind from source
         run: |
-          wget https://sourceware.org/pub/valgrind/valgrind-3.20.0.tar.bz2
-          tar xvf valgrind-3.20.0.tar.bz2
-          cd valgrind-3.20.0
+          wget https://sourceware.org/pub/valgrind/valgrind-3.21.0.tar.bz2
+          tar xvf valgrind-3.21.0.tar.bz2
+          cd valgrind-3.21.0
           ./configure
           make
           sudo make install

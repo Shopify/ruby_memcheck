@@ -61,9 +61,9 @@ gem install ruby_memcheck
 > You can install Valgrind from source using the following commands:
 > ```
 > sudo apt-get install -y libc6-dbg
-> wget https://sourceware.org/pub/valgrind/valgrind-3.20.0.tar.bz2
-> tar xvf valgrind-3.20.0.tar.bz2
-> cd valgrind-3.20.0
+> wget https://sourceware.org/pub/valgrind/valgrind-3.21.0.tar.bz2
+> tar xvf valgrind-3.21.0.tar.bz2
+> cd valgrind-3.21.0
 > ./configure
 > make
 > sudo make install
