@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
+require "English"
+require "shellwords"
 require "tempfile"
 require "rake/testtask"
 
 require "ruby_memcheck/configuration"
 require "ruby_memcheck/frame"
+require "ruby_memcheck/ruby_runner"
 require "ruby_memcheck/stack"
 require "ruby_memcheck/test_task_reporter"
 require "ruby_memcheck/test_task"
