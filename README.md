@@ -9,7 +9,8 @@ This gem provides a sane way to use Valgrind's memcheck on your native extension
     1. [How does it work?](#how-does-it-work)
     1. [Limitations](#limitations)
 1. [Installation](#installation)
-1. [Setup](#setup)
+1. [Running a Ruby script](#running-a-ruby-script)
+1. [Setup for test suites](#setup-for-test-suites)
 1. [Configuration](#configuration)
 1. [Suppression files](#suppression-files)
 1. [License](#license)
@@ -48,7 +49,16 @@ Because of the aggressive heuristics used to filter out false positives, there a
 gem install ruby_memcheck
 ```
 
-## Setup
+## Running a Ruby script
+
+You can run a Ruby script under ruby_memcheck. This will report all memory leaks in all native extensions found in your Ruby script. Simply replace the `ruby` part of your command with `ruby_memcheck`. For example:
+
+```sh
+$ ruby_memcheck -e "puts 'Hello world'"
+Hello world
+```
+
+## Setup for test suites
 
 > **Note**
 > If you encounter errors from Valgrind that looks like this:
@@ -69,7 +79,7 @@ gem install ruby_memcheck
 > sudo make install
 > ```
 
-The easiest way to use this gem is to use it on your test suite (minitest or RSpec) using rake.
+You can use ruby_memcheck on your test suite (Minitest or RSpec) using rake.
 
 0. Install Valgrind.
 1. In your Rakefile, require this gem.
