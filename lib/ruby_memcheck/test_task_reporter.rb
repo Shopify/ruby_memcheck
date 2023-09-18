@@ -42,9 +42,19 @@ module RubyMemcheck
       @loaded_binaries = loaded_features.keep_if do |feat|
         # Keep only binaries (ignore Ruby files).
         File.extname(feat) == ".so"
-      end.freeze
+      end
 
-      @loaded_binaries
+      if configuration.binary_name
+        @loaded_binaries.keep_if do |feat|
+          File.basename(feat, ".*") == configuration.binary_name
+        end
+
+        if @loaded_binaries.empty?
+          raise "The Ruby program executed never loaded a binary called `#{configuration.binary_name}`"
+        end
+      end
+
+      @loaded_binaries.freeze
     end
 
     def valgrind_xml_files
