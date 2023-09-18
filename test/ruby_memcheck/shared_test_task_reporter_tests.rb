@@ -235,6 +235,34 @@ module RubyMemcheck
       end
     end
 
+    def test_configration_binary_name
+      build_configuration(binary_name: "ruby_memcheck_c_test_one")
+      error = assert_raises do
+        run_with_memcheck(<<~RUBY)
+          RubyMemcheck::CTestOne.new.memory_leak
+          RubyMemcheck::CTestTwo.new.memory_leak
+        RUBY
+      end
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
+
+      assert_equal(1, @test_task.reporter.errors.length)
+
+      output = @output_io.string
+      refute_empty(output)
+      assert_match(/^100 bytes in 1 blocks are definitely lost in loss record/, output)
+      assert_match(/^ \*c_test_one_memory_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+    end
+
+    def test_configration_invalid_binary_name
+      build_configuration(binary_name: "invalid_binary_name")
+      error = assert_raises do
+        run_with_memcheck(<<~RUBY)
+          RubyMemcheck::CTestOne.new.memory_leak
+        RUBY
+      end
+      assert_includes(error.message, "`invalid_binary_name`")
+    end
+
     private
 
     def run_with_memcheck(code, raise_on_failure: true, spawn_opts: {})

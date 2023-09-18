@@ -153,6 +153,7 @@ If you want to override any of the default configurations you can call `RubyMemc
 
 `RubyMemcheck::Configuration` accepts a variety of keyword arguments. Here are all the arguments:
 
+- `binary_name`: Optional. The name of the only binary to report errors for. Use this if there is too much noise caused by other binaries.
 - `ruby`: Optional. The command to run to invoke Ruby. Defaults to the Ruby that is currently being used.
 - `valgrind`: Optional. The command to run to invoke Valgrind. Defaults to the string `"valgrind"`.
 - `valgrind_options`: Optional. Array of options to pass into Valgrind. This is only present as an escape hatch, so avoid using it. This may be deprecated or removed in future versions.

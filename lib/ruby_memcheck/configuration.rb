@@ -31,6 +31,7 @@ module RubyMemcheck
       /\Arb_yield/,
     ].freeze
 
+    attr_reader :binary_name
     attr_reader :ruby
     attr_reader :valgrind
     attr_reader :valgrind_options
@@ -57,8 +58,7 @@ module RubyMemcheck
       output_io: $stderr,
       filter_all_errors: false
     )
-      warn("ruby_memcheck: binary_name is no longer required for configuration") if binary_name
-
+      @binary_name = binary_name
       @ruby = ruby
       @valgrind = valgrind
       @valgrind_options = valgrind_options
