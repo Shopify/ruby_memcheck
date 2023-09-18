@@ -10,3 +10,4 @@ Gemfile.lock
 /tmp/
 
 *.so
+.DS_Store
