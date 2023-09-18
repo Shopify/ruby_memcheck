@@ -20,7 +20,9 @@ jobs:
       # - run: sudo apt-get install -y valgrind
       # We cannot use Valgrind from apt because we need at least Valgrind 3.20.0
       # to support DWARF 5
-      - run: sudo apt-get install -y libc6-dbg
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libc6-dbg
       - name: Install Valgrind from source
         run: |
           wget https://sourceware.org/pub/valgrind/valgrind-3.21.0.tar.bz2
