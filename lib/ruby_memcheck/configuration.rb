@@ -14,6 +14,7 @@ module RubyMemcheck
     DEFAULT_VALGRIND_SUPPRESSIONS_DIR = "suppressions"
     DEFAULT_SKIPPED_RUBY_FUNCTIONS = [
       /\Aeval_string_with_cref\z/,
+      /\Aintern_str\z/, # Same as rb_intern, but sometimes rb_intern is optimized out
       /\Arb_add_method_cfunc\z/,
       /\Arb_check_funcall/,
       /\Arb_class_boot\z/, # Called for all the different ways to create a Class
