@@ -223,10 +223,22 @@ module RubyMemcheck
       end
     end
 
-    def test_envionment_variable_RUBY_MEMCHECK_RUNNING
+    def test_environment_variable_RUBY_MEMCHECK_RUNNING
       Tempfile.create do |tempfile|
         ok = run_with_memcheck(<<~RUBY, raise_on_failure: false)
           File.write(#{tempfile.path.inspect}, ENV["RUBY_MEMCHECK_RUNNING"])
+        RUBY
+
+        assert(ok)
+        assert_empty(@test_task.reporter.errors)
+        assert_includes(tempfile.read, "1")
+      end
+    end
+
+    def test_environment_variable_RUBY_FREE_AT_EXIT
+      Tempfile.create do |tempfile|
+        ok = run_with_memcheck(<<~RUBY, raise_on_failure: false)
+          File.write(#{tempfile.path.inspect}, ENV["RUBY_FREE_AT_EXIT"])
         RUBY
 
         assert(ok)
