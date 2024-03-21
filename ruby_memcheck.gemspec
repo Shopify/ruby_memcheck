@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "Use Valgrind memcheck without going crazy"
   spec.homepage      = "https://github.com/Shopify/ruby_memcheck"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
+  spec.required_ruby_version = ">= 3.0.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
 
