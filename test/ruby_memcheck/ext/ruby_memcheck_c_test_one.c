@@ -38,11 +38,9 @@ static VALUE c_test_one_uninitialized_value(VALUE _)
 
 static VALUE c_test_one_call_into_ruby_mem_leak(VALUE obj)
 {
-    char str[20];
-    for (int i = 0; i < 10000; i++) {
-        sprintf(str, "foobar%d", i);
-        rb_intern(str);
-    }
+    VALUE string = rb_eval_string("String.new(capacity: 10_000)");
+    RSTRING(string)->as.heap.ptr = NULL;
+
     return Qnil;
 }
 
