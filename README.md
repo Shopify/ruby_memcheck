@@ -163,6 +163,7 @@ If you want to override any of the default configurations you can call `RubyMemc
 - `temp_dir`: Optional. The directory to store temporary files. It defaults to a temporary directory. This is present for development debugging, so you shouldn't have to use it.
 - `output_io`: Optional. The `IO` object to output Valgrind errors to. Defaults to standard error.
 - `filter_all_errors`: Optional. Whether to filter all kinds of Valgrind errors (not just memory leaks). This feature should only be used if you're encountering a large number of illegal memory accesses coming from Ruby. If you need to use this feature, you may have found a bug inside of Ruby. Consider reporting it to the [Ruby bug tracker](https://bugs.ruby-lang.org/projects/ruby-master/issues/new). Defaults to `false`.
+- `use_only_ruby_free_at_exit`: Optional. Use only the [`RUBY_FREE_AT_EXIT`](https://bugs.ruby-lang.org/issues/19993) feature introduced in Ruby 3.3 and disables most of the heuristics inside of ruby_memcheck. Disable this if you want to use the original heuristics. Defaults to `true` for Ruby 3.4 and later, `false` otherwise. Note: while `RUBY_FREE_AT_EXIT` was introduced in Ruby 3.3, there are bugs which prevents it from working well, so it is only enabled by default for Ruby 3.4 and later.
 
 ## Suppression files
 

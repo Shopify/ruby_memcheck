@@ -10,6 +10,32 @@ module RubyMemcheck
     end
 
     def skip?
+      if @configuration.use_only_ruby_free_at_exit?
+        skip_using_ruby_free_at_exit?
+      else
+        skip_using_original_heuristics?
+      end
+    end
+
+    private
+
+    def skip_using_ruby_free_at_exit?
+      if configuration.binary_name.nil?
+        false
+      else
+        in_binary = false
+
+        frames.each do |frame|
+          if frame.in_binary?
+            in_binary = true
+          end
+        end
+
+        !in_binary
+      end
+    end
+
+    def skip_using_original_heuristics?
       in_binary = false
 
       frames.each do |frame|

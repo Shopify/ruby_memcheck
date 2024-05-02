@@ -59,7 +59,40 @@ module RubyMemcheck
       assert_empty(@output_io.string)
     end
 
-    def test_call_into_ruby_mem_leak_does_not_report
+    def test_call_into_ruby_mem_leak_does_not_report_when_RUBY_FREE_AT_EXIT_is_not_supported
+      skip if Configuration::RUBY_FREE_AT_EXIT_SUPPORTED
+
+      ok = run_with_memcheck(<<~RUBY)
+        RubyMemcheck::CTestOne.new.call_into_ruby_mem_leak
+      RUBY
+
+      assert(ok)
+      assert_empty(@test_task.reporter.errors)
+      assert_empty(@output_io.string)
+    end
+
+    def test_call_into_ruby_mem_leak_not_report_when_RUBY_FREE_AT_EXIT_is_supported
+      skip unless Configuration::RUBY_FREE_AT_EXIT_SUPPORTED
+
+      error = assert_raises do
+        run_with_memcheck(<<~RUBY)
+          RubyMemcheck::CTestOne.new.call_into_ruby_mem_leak
+        RUBY
+      end
+      assert_equal(RubyMemcheck::TestTaskReporter::VALGRIND_REPORT_MSG, error.message)
+
+      output = @output_io.string
+      assert_equal(1, @test_task.reporter.errors.length, output)
+
+      refute_empty(output)
+      assert_match(/^ \*c_test_one_call_into_ruby_mem_leak \(ruby_memcheck_c_test_one\.c:\d+\)$/, output)
+    end
+
+    def test_call_into_ruby_mem_leak_not_report_when_RUBY_FREE_AT_EXIT_is_supported_but_use_only_ruby_free_at_exit_disabled
+      skip unless Configuration::RUBY_FREE_AT_EXIT_SUPPORTED
+
+      build_configuration(use_only_ruby_free_at_exit: false)
+
       ok = run_with_memcheck(<<~RUBY)
         RubyMemcheck::CTestOne.new.call_into_ruby_mem_leak
       RUBY
