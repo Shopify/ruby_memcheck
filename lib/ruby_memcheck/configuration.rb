@@ -31,6 +31,7 @@ module RubyMemcheck
       /\Arb_thread_create\z/, # Threads are relased to a cache, so they may be reported as a leak
       /\Arb_yield/,
     ].freeze
+    RUBY_FREE_AT_EXIT_SUPPORTED = Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.4.0")
 
     attr_reader :binary_name
     attr_reader :ruby
@@ -43,9 +44,11 @@ module RubyMemcheck
     attr_reader :loaded_features_file
     attr_reader :output_io
     attr_reader :filter_all_errors
+    attr_reader :use_only_ruby_free_at_exit
 
     alias_method :valgrind_generate_suppressions?, :valgrind_generate_suppressions
     alias_method :filter_all_errors?, :filter_all_errors
+    alias_method :use_only_ruby_free_at_exit?, :use_only_ruby_free_at_exit
 
     def initialize(
       binary_name: nil,
@@ -57,7 +60,8 @@ module RubyMemcheck
       skipped_ruby_functions: DEFAULT_SKIPPED_RUBY_FUNCTIONS,
       temp_dir: Dir.mktmpdir,
       output_io: $stderr,
-      filter_all_errors: false
+      filter_all_errors: false,
+      use_only_ruby_free_at_exit: RUBY_FREE_AT_EXIT_SUPPORTED
     )
       @binary_name = binary_name
       @ruby = ruby
@@ -83,6 +87,8 @@ module RubyMemcheck
       ]
 
       @loaded_features_file = Tempfile.create("", @temp_dir)
+
+      @use_only_ruby_free_at_exit = use_only_ruby_free_at_exit
     end
 
     def command(*args)
