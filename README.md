@@ -196,6 +196,9 @@ Let's celebrate wins from this gem! If this gem was useful for you, please share
 - [`libxml2`](https://gitlab.gnome.org/GNOME/libxml2):
   - Found 1 memory leak: [memory leak from \`xmlSchemaValidateStream\` in v2.11.x (#530)](https://gitlab.gnome.org/GNOME/libxml2/-/issues/530)
   - Running in Nokogiri's CI pipeline: [#2868](https://github.com/sparklemotion/nokogiri/pull/2868)
+- [`re2`](https://github.com/mudge/re2):
+  - Found 8 memory leaks: [#105](https://github.com/mudge/re2/pull/105)
+  - Running on CI: [#149](https://github.com/mudge/re2/pull/149)
 
 ## License
 
