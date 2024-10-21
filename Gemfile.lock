@@ -27,7 +27,7 @@ GEM
     rake-compiler (1.2.8)
       rake
     regexp_parser (2.9.2)
-    rspec-core (3.13.1)
+    rspec-core (3.13.2)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.1)
     rubocop (1.66.1)
