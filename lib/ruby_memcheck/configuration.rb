@@ -101,6 +101,15 @@ module RubyMemcheck
         #     ruby_init_stack (thread_pthread.c:871)
         #     main (main.c:48)
         "ulimit -s unlimited && ",
+        # On some distros, and in some Docker containers, the number of file descriptors is set to a
+        # very high number like 1073741816 that valgrind >= 3.21.0 will error out on:
+        #   --184100:0:libcfile Valgrind: FATAL: Private file creation failed.
+        #      The current file descriptor limit is 1073741804.
+        #      If you are running in Docker please consider
+        #      lowering this limit with the shell built-in limit command.
+        #   --184100:0:libcfile Exiting now.
+        # See https://bugs.kde.org/show_bug.cgi?id=465435 for background information.
+        "ulimit -n 8192 && ",
         valgrind,
         valgrind_options,
         valgrind_suppression_files.map { |f| "--suppressions=#{f}" },
