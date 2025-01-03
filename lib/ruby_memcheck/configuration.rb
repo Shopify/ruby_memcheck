@@ -29,6 +29,7 @@ module RubyMemcheck
       /\Arb_rescue/,
       /\Arb_respond_to\z/,
       /\Arb_thread_create\z/, # Threads are relased to a cache, so they may be reported as a leak
+      /\Arb_vm_exec\z/,
       /\Arb_yield/,
     ].freeze
     RUBY_FREE_AT_EXIT_SUPPORTED = Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.4.0")
