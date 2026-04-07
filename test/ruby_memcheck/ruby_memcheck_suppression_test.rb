@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "nokogiri"
 
 module RubyMemcheck
   class RubyMemcheckSuppressionTest < Minitest::Test
@@ -10,21 +9,6 @@ module RubyMemcheck
     end
 
     def test_given_a_suppression_node
-      suppression = ::Nokogiri::XML(<<~EOF).at_xpath("//suppression")
-        <foo>
-          <suppression>
-            <sname>insert_a_suppression_name_here</sname>
-            <skind>Memcheck:Leak</skind>
-            <skaux>match-leak-kinds: definite</skaux>
-            <sframe> <fun>malloc</fun> </sframe>
-            <sframe> <fun>objspace_xmalloc0</fun> </sframe>
-            <sframe> <fun>ruby_xmalloc0</fun> </sframe>
-            <sframe> <obj>/usr/lib/libX11.so.6.3.0</fun> </sframe>
-            <sframe> <fun>ruby_xmalloc_body</fun> </sframe>
-            <sframe> <fun>ruby_xmalloc</fun> </sframe>
-          </suppression>
-        </foo>
-      EOF
       expected = <<~EOF
         {
           insert_a_suppression_name_here
@@ -37,10 +21,29 @@ module RubyMemcheck
           fun:ruby_xmalloc
         }
       EOF
-      assert_equal(
-        expected,
-        RubyMemcheck::Suppression.new(@configuration, suppression).to_s,
-      )
+
+      RubyMemcheck.test_xml_backends.each do |backend|
+        suppression = backend.parse(<<~EOF).at_xpath("//suppression")
+          <foo>
+            <suppression>
+              <sname>insert_a_suppression_name_here</sname>
+              <skind>Memcheck:Leak</skind>
+              <skaux>match-leak-kinds: definite</skaux>
+              <sframe> <fun>malloc</fun> </sframe>
+              <sframe> <fun>objspace_xmalloc0</fun> </sframe>
+              <sframe> <fun>ruby_xmalloc0</fun> </sframe>
+              <sframe> <obj>/usr/lib/libX11.so.6.3.0</obj> </sframe>
+              <sframe> <fun>ruby_xmalloc_body</fun> </sframe>
+              <sframe> <fun>ruby_xmalloc</fun> </sframe>
+            </suppression>
+          </foo>
+        EOF
+
+        assert_equal(
+          expected,
+          RubyMemcheck::Suppression.new(@configuration, suppression).to_s,
+        )
+      end
     end
   end
 end

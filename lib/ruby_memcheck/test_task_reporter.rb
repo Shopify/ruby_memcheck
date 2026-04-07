@@ -63,18 +63,11 @@ module RubyMemcheck
     end
 
     def parse_valgrind_output
-      require "nokogiri"
-
       @errors = []
+      backend = XmlBackend.create
 
       valgrind_xml_files.each do |file|
-        reader = Nokogiri::XML::Reader(File.open(file)) do |config| # rubocop:disable Style/SymbolProc
-          config.huge
-        end
-        reader.each do |node|
-          next unless node.name == "error" && node.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT
-
-          error_xml = Nokogiri::XML::Document.parse(node.outer_xml).root
+        backend.each_error(file) do |error_xml|
           error = ValgrindError.new(configuration, loaded_binaries, error_xml)
           next if error.skip?
 

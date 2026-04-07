@@ -14,6 +14,7 @@ require "ruby_memcheck/test_task"
 require "ruby_memcheck/valgrind_error"
 require "ruby_memcheck/suppression"
 require "ruby_memcheck/version"
+require "ruby_memcheck/xml_backend"
 
 module RubyMemcheck
   class << self
